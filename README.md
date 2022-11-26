@@ -1,24 +1,28 @@
-# affida-app
+# AFFIDA - CRM
 
-## Project setup
-```
-npm install
-```
+## TUTORIAL
+Used https://github.com/iffy/electron-updater-example
 
-### Compiles and hot-reloads for development
+## DEVELOP MODE
 ```
-npm run serve
+Package.json - main:"background.js"
 ```
 
-### Compiles and minifies for production
+## HOW TO PUBLISH
 ```
-npm run build
+Delete dist_electron folder.
+Delete dist folder.
+Package.json - main:"background.js"
+vue-cli-service electron:build
+Package.json - main:"dist_electron/bundled/background.js"
+electron-builder -p always
 ```
 
-### Lints and fixes files
-```
-npm run lint
-```
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+## WHAT IS IT?
+```
+L'app era stata sviluppata in Vue3 e con Electron aggiornato, l'auto-updater e i vari servizi funzionavano.
+Unica modifica c'era bisogno di un preload.js al cui interno erano presenti le funzionalità per accedere al ipcRender.
+
+Unico problema non risolto era il fatto che non fosse possibile utilizzare mongoose, per tanto è stato necessario fare un downgrade ad un progetto precedentemente funzionante per potersi collegare al database.
+```
