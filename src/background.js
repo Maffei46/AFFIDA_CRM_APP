@@ -20,7 +20,7 @@ async function createWindow() {
     width: 1600,
     height: 800,
     minHeight: 700,
-    minWidth:1200,
+    minWidth:1240,
     frame: false,
     autoHideMenuBar: true,
     webPreferences: {
@@ -81,7 +81,8 @@ app.on('ready', async () => {
   createWindow();
 
   var routes = require('./server/routes');
-  routes.start(win,store);
+  var basePath = '';
+  routes.start(basePath,win,store);
 })
 
 // Exit cleanly on request from parent process in development mode.
@@ -102,9 +103,7 @@ if (isDevelopment) {
 
 
 ipcMain.handle('restart', (event) => {
-  //TODO: Controllare sfondo bianco al riavvio
   app.relaunch();
-  app.exit();
 });
 
 ipcMain.handle('reduce', (event) => {

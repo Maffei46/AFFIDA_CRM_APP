@@ -47,7 +47,7 @@ export default {
     components:{MenuComponent,Hover},
     data() {
         return {
-            menuOpened: true,
+            menuOpened: false,
         }
     },
     watch:{
@@ -71,12 +71,6 @@ export default {
         }
     },
     mounted(){
-        addEventListener('keypress', (event) => {
-            if(event.code == 'Space'){
-                this.menuOpened = !this.menuOpened;
-            }
-            
-        });
     }
 }
 </script>

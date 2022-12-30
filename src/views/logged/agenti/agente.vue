@@ -1,5 +1,11 @@
 <template>
     <div id="agente">
+        <LocationPath :routes="[ {n:'Agenti',p:'/logged/agenti',i:'group'}, {n:agente?agente.nome+' '+agente.cognome:$route.params.id}]" />
+
+        
+        
+        <div class="sectionTitle" v-if="agente"><i class="material-icons">group</i> Agenti - {{agente.nome}} {{agente.cognome}}</div>
+        <div class="sectionTitle" v-if="!agente"><i class="material-icons">group</i> Agenti - {{this.$route.params.id}}</div>
         <div class="loading" v-if="loading"><div class="lds-ring"><div></div><div></div><div></div><div></div></div></div>
 
         <form v-if="agente" @submit="modificaAgente">
@@ -15,8 +21,8 @@
                                 <div class="label">ID*</div>
                             </div>
                             <div class="input">
-                                <input type="text" v-model="agente.IDEGG" required>
-                                <div class="label">IDEGG*</div>
+                                <input type="text" v-model="agente.IDEGG">
+                                <div class="label">IDEGG</div>
                             </div>
                         </div>
                     </div>
@@ -61,7 +67,7 @@
                     <div style="display: flex; column-gap:10px">
                         <div class="input" style="width: 100%">
                             <select v-model="agente.rapporto">
-                                <option value="attivo">attivo</option>
+                                <option value="attivo">Attivo</option>
                             </select>
                             <div class="label">RAPPORTO</div>
                         </div>
@@ -72,6 +78,10 @@
                             <div class="label">STATO ACCOUNT</div>
                         </div>
                     </div>
+                    <div class="input">
+                        <input type="text" v-model="agente.IBAN">
+                        <div class="label">IBAN</div>
+                    </div>
 
                     <div class="hrB">
                         <hr>
@@ -79,21 +89,37 @@
                     </div>
                     <div style="display: flex; column-gap:10px">
                         <div class="input" style="width: 100%">
-                            <select></select>
+                            <select v-model="agente.topExecutive" disabled>
+                                <option :value="agente._id" v-for="agente in agentiTopExecutive" :key="agente._id">
+                                    {{agente.nome}} {{agente.cognome}}
+                                </option>
+                            </select>
                             <div class="label">TOP EXECUTIVE</div>
                         </div>
                         <div class="input" style="width: 100%">
-                            <select></select>
+                            <select v-model="agente.executive" disabled>
+                                <option :value="agente._id" v-for="agente in agentiExecutive" :key="agente._id">
+                                    {{agente.nome}} {{agente.cognome}}
+                                </option>
+                            </select>
                             <div class="label">EXECUTIVE</div>
                         </div>
                     </div>
                     <div style="display: flex; column-gap:10px">
                         <div class="input" style="width: 100%">
-                            <select></select>
+                            <select v-model="agente.teamLeader" disabled>
+                                <option :value="agente._id" v-for="agente in agentiTeamLeader" :key="agente._id">
+                                    {{agente.nome}} {{agente.cognome}}
+                                </option>
+                            </select>
                             <div class="label">TEAM LEADER</div>
                         </div>
                         <div class="input" style="width: 100%">
-                            <select></select>
+                            <select v-model="agente.headExecutive" disabled>
+                                <option :value="agente._id" v-for="agente in agentiHeadExecutive" :key="agente._id">
+                                    {{agente.nome}} {{agente.cognome}}
+                                </option>
+                            </select>
                             <div class="label">HEAD EXECUTIVE</div>
                         </div>
                     </div>
@@ -212,6 +238,26 @@
                             <div class="label">CELLULARE</div>
                         </div>
                     </div>
+                    <div style="display: flex; column-gap:10px">
+                        <div class="input" style="width: 100%">
+                            <input type="text" v-model="agente.PEC">
+                            <div class="label">PEC</div>
+                        </div>
+                        <div class="input" style="width: 100%">
+                            <input type="text" v-model="agente.SDI">
+                            <div class="label">SDI</div>
+                        </div>
+                    </div>
+                    <div style="display: flex; column-gap:10px">
+                        <div class="input" style="width: 100%">
+                            <input type="date" v-model="agente.oam" disabled>
+                            <div class="label">OAM</div>
+                        </div>
+                        <div class="input" style="width: 100%">
+                            <input type="url" disabled>
+                            <div class="label">COMPLEANNO</div>
+                        </div>
+                    </div>
 
                     <div class="hrB">
                         <hr>
@@ -280,6 +326,22 @@
                         </div>
                     </div>
                     <div class="infoTxt">-1 se l'utente non ha obiettivi annuali in quel ambito</div>
+
+                    <div class="hrB">
+                        <hr>
+                        <div class="hrTitle">SOCIAL</div>    
+                    </div>
+                    <div style="display: flex; column-gap:10px">
+                        <div class="input" style="width: 100%">
+                            <input type="url" v-model="agente.facebook">
+                            <div class="label">FACEBOOK</div>
+                        </div>
+                        <div class="input" style="width: 100%">
+                            <input type="url" v-model="agente.instagram">
+                            <div class="label">INSTAGRAM</div>
+                        </div>
+                    </div>
+                    
                     
                 </div>
                 <div class="rightSide">
@@ -339,18 +401,36 @@
                         <input type="checkbox" v-model="agente.provvigioni.edit" :disabled="!agente.provvigioni.access">
                         <div class="label bigLabel">PUO MODIFICARE PROVVIGIONI</div>
                     </div>
+
+                    <div class="hrB">
+                        <hr>
+                        <div class="hrTitle">ALTRO</div>    
+                    </div>
+
+                    <div class="checkbox">
+                        <input type="checkbox" v-model="agente.showInClassifiche">
+                        <div class="label bigLabel">MOSTRA UTENTE NELLE CLASSIFICHE</div>
+                    </div>
+                    <div class="checkbox">
+                        <input type="checkbox" v-model="agente.adminPortingAccess">
+                        <div class="label bigLabel">PUO VEDERE: ADMIN ( HUB / AGENTI / PRATICHE )</div>
+                    </div>
                 </div>
             </div>
             <div class="actions">
                 <button type="submit">MODIFICA</button>
             </div>
         </form>
+
+        <AgenteInfoComponent :agente="agente" ref="AgenteInfoComponent" />
     </div>
 </template>
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
+import AgenteInfoComponent from './agente_info_component.vue'
 export default {
+    components:{AgenteInfoComponent},
     data() {
         return {
             agente:null,
@@ -362,7 +442,7 @@ export default {
         }
     },
     methods:{
-        ...mapActions(['agenti_fetchAll']),
+        ...mapActions(['agenti_fetchAll','agenti_edit']),
         findAgente(){
             const index = this.agenti.findIndex(e => e._id == this.$route.params.id);
             this.loading = false;
@@ -372,7 +452,6 @@ export default {
 
             this.agente = JSON.parse(JSON.stringify(this.agenti[index]));
             this.setupDefaultObiettivi();
-            console.log(this.agente)
         },
         setupDefaultObiettivi(){
             if(!this.agente.obiettivi){
@@ -384,15 +463,37 @@ export default {
                     mediazioni: -1,
                 }
             }
+            if(!this.agente.obiettivi.mutui) this.agente.obiettivi.mutui = -1;
+            if(!this.agente.obiettivi.cqs) this.agente.obiettivi.cqs = -1;
+            if(!this.agente.obiettivi.prestiti) this.agente.obiettivi.prestiti = -1;
+            if(!this.agente.obiettivi.aziende) this.agente.obiettivi.aziende = -1;
+            if(!this.agente.obiettivi.mediazioni) this.agente.obiettivi.mediazioni = -1;
         },
         modificaAgente(e){
             e.preventDefault();
-            
+            this.loading = true;
+            this.agenti_edit(this.agente).then(()=>{
+                this.$notify({
+                    group: 'mainGroup',
+                    type: 'success',
+                    title: 'Agente Modificato',
+                    duration: 4000,
+                });
+                this.loading = false;
+            })
         }
     },
-    computed: mapGetters(['agenti']),
+    computed: mapGetters(['agenti','agentiExecutive','agentiTopExecutive','agentiTeamLeader','agentiHeadExecutive']),
     mounted(){
-        this.agenti_fetchAll().then(()=>{this.findAgente()});
+        addEventListener('keypress', (event) => {
+            if(event.code == "KeyI"){
+                this.$refs.AgenteInfoComponent.opened = !this.$refs.AgenteInfoComponent.opened;
+            }
+        });
+        setTimeout(() => {
+            this.agenti_fetchAll().then(()=>{this.findAgente()});
+        }, 0);
+        
     }
 }
 </script>
@@ -524,6 +625,7 @@ form{
     font-weight: 300;
     text-align: right;
     margin-top: -10px;
+    margin-bottom: 20px;
 }
 
 

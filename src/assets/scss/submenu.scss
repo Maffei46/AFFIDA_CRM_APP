@@ -13,6 +13,8 @@
     top: var(--TitleBarHeight);
     transform: translateX(-50%);
     border-top: 1px solid rgba(255, 255, 255, 0.132);
+    z-index: 10;
+    height: var(--SubMenuHeight);
 }
 
 .subMenu .title{
@@ -35,6 +37,10 @@
     font-weight: 700;
 }
 
+.subMenu .link:hover{
+    transform: scale(1.1);
+}
+
 .subMenu .back {
     display: flex;
     justify-content: center;
@@ -44,9 +50,38 @@
 .subMenu .back i{
     font-size: 13pt;
 }
+.subMenu .back:hover{
+    transform: scale(1.1);
+    transition-duration: 0.1s;
+}
+
+.subMenu .back:hover i{
+    font-weight: 800;
+    transition-duration: 0.1s;
+}
 
 .subMenu .separator{
     border: 1px solid white;
     opacity: 0.2;
     height: 20px;
+}
+
+.subMenu .router-link-exact-active{
+    text-decoration: underline;
+}
+
+
+.sectionTitle{
+    display: flex;
+    align-items: center;
+    font-size: 10pt;
+    opacity: 0.2;
+    position: absolute;
+    top: calc(var(--TitleBarHeight) + 5px);
+    left: 10px;
+    text-transform: uppercase;
+}
+.sectionTitle i{
+    margin-right: 5px;
+    font-size: 12pt;
 }

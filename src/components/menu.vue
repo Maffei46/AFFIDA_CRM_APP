@@ -1,47 +1,57 @@
 <template>
-    <div id="menu" :class="opened?'menuOpened':'menuClosed'">
-        <div class="top"></div>
-        <div class="mid">
-            <router-link to="/">
-                <div class="section">
-                    <i class="material-icons">home</i>
-                    <span>HOME</span>
-                </div>
-            </router-link>
-            <router-link to="/login" v-if="!logged">
-                <div class="section">
-                    <i class="material-icons">login</i>
-                    <span>LOGIN</span>
-                </div>
-            </router-link>
-            <router-link to="/logged/agenti" v-if="logged">
-                <div class="section">
-                    <i class="material-icons">group</i>
-                    <span>AGENTI</span>
-                </div>
-            </router-link>
-            <router-link to="/logged/pratiche" v-if="logged">
-                <div class="section">
-                    <i class="material-icons">payments</i>
-                    <span>PRATICHE</span>
-                </div>
-            </router-link>
+    <div>
+        <div id="menu" :class="opened?'menuOpened':'menuClosed'">
+            <div class="top"></div>
+            <div class="mid">
+                <router-link to="/">
+                    <div class="section">
+                        <i class="material-icons">home</i>
+                        <span>HOME</span>
+                    </div>
+                </router-link>
+                <router-link to="/login" v-if="!logged">
+                    <div class="section">
+                        <i class="material-icons">login</i>
+                        <span>LOGIN</span>
+                    </div>
+                </router-link>
+                <router-link to="/logged/agenti" v-if="logged">
+                    <div class="section">
+                        <i class="material-icons">group</i>
+                        <span>AGENTI</span>
+                    </div>
+                </router-link>
+                <router-link to="/logged/pratiche" v-if="logged">
+                    <div class="section">
+                        <i class="material-icons">payments</i>
+                        <span>PRATICHE</span>
+                    </div>
+                </router-link>
+
+                <router-link to="/logged/sistema" v-if="logged">
+                    <div class="section">
+                        <i class="material-icons">developer_board</i>
+                        <span>SISTEMA</span>
+                    </div>
+                </router-link>
 
 
-            <router-link to="/settings">
-                <div class="section">
-                    <i class="material-icons">settings</i>
-                    <span>SETTINGS</span>
-                </div>
-            </router-link>
-            
+                <router-link to="/settings">
+                    <div class="section">
+                        <i class="material-icons">settings</i>
+                        <span>SETTINGS</span>
+                    </div>
+                </router-link>
+                
+            </div>
+            <div class="bottom">
+                <div class="logout" v-if="logged" @click="logout()">LOGOUT</div>
+                <div class="version">v{{version}}</div>
+            </div>
         </div>
-        <div class="bottom">
-            <div class="logout" v-if="logged" @click="logout()">LOGOUT</div>
-            <div class="version">v{{version}}</div>
-        </div>
+        <Transition name="fade"><div id="closeSection" v-if="opened" @click="closeMenu"></div></Transition>
+        
     </div>
-    <!-- <div id="closeSection" :class="opened?'closeOpened':'closeClosed'" @click="closeMenu"></div> -->
 </template>
 
 <script>
@@ -127,12 +137,12 @@ $menuTransitionTime: 0.4s;
 }
 #closeSection{
     position: fixed;
-    width: calc(100% - var(--MenuWidth));
-    left: var(--MenuWidth);
+    width: calc(100%);
+    left: 0px;
     top: var(--TitleBarHeight);
     height: calc(100% - var(--TitleBarHeight));
-    background-color: rgba(255, 0, 0, 0.188);
-    z-index: 99;
+    backdrop-filter: blur(10px);
+    z-index: 98;
     
 }
 
@@ -157,6 +167,23 @@ $menuTransitionTime: 0.4s;
         color: var(--Color2);
         transition-duration: 0.1s;
     }
+}
+
+.fade-enter-active{
+    animation: fade-in $menuTransitionTime;
+} 
+
+.fade-leave-active {
+    animation: fade-in $menuTransitionTime reverse;
+}
+
+@keyframes fade-in {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 
 </style>

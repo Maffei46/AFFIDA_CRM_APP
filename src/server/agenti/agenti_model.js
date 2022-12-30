@@ -66,7 +66,10 @@ var UsersSchema = new Schema({
         enum: ["attivo","non attivo"],
         default: "attivo",
     },
-
+    IBAN:{
+        type: String,
+        required: false,
+    },
     provincia:{
         type: String,
         required: false,
@@ -200,6 +203,7 @@ var UsersSchema = new Schema({
     IDEGG:{
         type: String,
         required: false,
+        unique: true,
     },
     //Provvigioni
     provvigioni:{

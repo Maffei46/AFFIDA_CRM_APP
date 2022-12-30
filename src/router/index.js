@@ -14,14 +14,45 @@ const routes = [
   { path: '/settings', name: 'settings', component: SettingsView },
   { path: '/logged', component: LoggedView, children:[
     { path: 'pratiche', component: LoggedPraticheView, children:[
-      { path: 'import', name: 'Pratiche Import', component: ()=>import('@/views/logged/pratiche/pratiche_import.vue') },
+      { path: '', redirect:"hub"},
+      { path: 'hub', name: 'Pratiche Hub', component: ()=>import('@/views/logged/pratiche/pratiche_hub.vue') },
+      { path: 'info', name: 'Pratiche Info', component: ()=>import('@/views/logged/pratiche/pratiche_info.vue') },
+      { path: 'import', name: 'Pratiche Importa', component: ()=>import('@/views/logged/pratiche/pratiche_import.vue') },
+      { path: 'select', name: 'Pratiche Seleziona', component: ()=>import('@/views/logged/pratiche/pratiche_select.vue') },
+      { path: 'provvigioni', name: 'Pratiche Provvigioni', component: ()=>import('@/views/logged/pratiche/pratiche_provvigioni.vue') },
+      { path: ':id', name: 'Pratica', component: ()=>import('@/views/logged/pratiche/pratiche_id.vue') },
     ]},
     { path: 'agenti', component: ()=>import('@/views/logged/agenti/Agenti.vue'), children:[
-      { path: '', redirect:"list"},
+      { path: '', redirect:"hub"},
+      { path: 'hub', name: 'Agenti Hub', component: ()=>import('@/views/logged/agenti/agenti_hub.vue') },
       { path: 'list', name: 'Agenti List', component: ()=>import('@/views/logged/agenti/agenti_list.vue') },
+      { path: 'accessi', name: 'Agenti Accessi', component: ()=>import('@/views/logged/agenti/agenti_listaAccessi.vue') },
       { path: ':id', name: 'Agente', component: ()=>import('@/views/logged/agenti/agente.vue') },
-      
     ]},
+    { path: 'sistema', component: ()=>import('@/views/logged/sistema/Sistema.vue'), children:[
+      { path: '', redirect:"hub"},
+      { path: 'hub', name: 'Sistema Hub', component: ()=>import('@/views/logged/sistema/sistema_hub.vue')},
+      { path: 'leads',component:()=>import('@/views/logged/sistema/leads/Leads.vue'),children:[
+        { path: '', redirect:"lista"},
+        {path: 'lista', name: 'Sistema Leads Lista', component:()=>import('@/views/logged/sistema/leads/leads_lista.vue')},
+        {path: 'nuovo', name: 'Sistema Leads Nuovo', component:()=>import('@/views/logged/sistema/leads/leads_nuovo.vue')},
+        {path: ':id', name: 'Sistema Leads Modifica', component:()=>import('@/views/logged/sistema/leads/leads_id.vue')}
+      ]},
+      { path: 'banche',component:()=>import('@/views/logged/sistema/banche/Banche.vue'),children:[
+        { path: '', redirect:"lista"},
+        { path: 'lista', name: 'Sistema Banche Lista',component:()=>import('@/views/logged/sistema/banche/banche_lista.vue') },
+        { path: 'nuovo', name: 'Sistema Banche Nuovo',component:()=>import('@/views/logged/sistema/banche/banche_nuovo.vue') },
+        { path: ':id', name: 'Sistema Banche Modifica',component:()=>import('@/views/logged/sistema/banche/banche_id.vue') },
+        { path: ':bankID/products/nuovo', name: 'Sistema Banche Prodotti Nuovo',component:()=>import('@/views/logged/sistema/banche/products/products_nuovo.vue') },
+        { path: ':bankID/products/:productID', name: 'Sistema Banche Prodotti Modifica',component:()=>import('@/views/logged/sistema/banche/products/products_id.vue') },
+      ]},
+      { path: 'agenzie',component:()=>import('@/views/logged/sistema/agenzie/Agenzie.vue'),children:[
+        { path: '', redirect:"lista"},
+        { path: 'lista', name: 'Sistema Agenzie Lista',component:()=>import('@/views/logged/sistema/agenzie/agenzie_lista.vue') },
+        { path: 'nuovo', name: 'Sistema Agenzie Nuovo',component:()=>import('@/views/logged/sistema/agenzie/agenzie_nuovo.vue') },
+        { path: ':id', name: 'Sistema Agenzie Modifica',component:()=>import('@/views/logged/sistema/agenzie/agenzie_id.vue') },
+      ]},
+    ]}
   ]},
   {
     path: '/about',

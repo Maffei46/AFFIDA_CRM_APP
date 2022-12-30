@@ -1,11 +1,12 @@
 'use strict'
 const {ipcMain} = require("electron");
 
-module.exports.start = function(win,store){
+module.exports.start = function(basePath,win,store){
     var updates_actions = require('./updates_actions');
     updates_actions.setupWin(win,store);
 
-    ipcMain.handle('updates/check', (event) => {
+    // updates/check
+    ipcMain.handle(basePath+'/check', (event) => {
         updates_actions.checkAndNotify();
     });
 }

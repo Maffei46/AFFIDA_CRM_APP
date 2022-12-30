@@ -29,6 +29,7 @@ form .input select{
     z-index: 5;
     background-color: var(--mainBGColor);
 }
+
 form .input textarea{
     width: 100%;
     max-width: 100%;
@@ -127,6 +128,11 @@ form .checkbox input[type="checkbox"]{
     height: 20px;
 }
 
+form .input input[type="date"]{
+    height: 27px;
+    line-height: 27px;
+}
+
 form button{
     width: 100%;
     background-color: var(--mainColor);
@@ -204,6 +210,20 @@ form .hr .hrName{
     color: var(--deleteColorFont);
     background-color: var(--mainColorFont);
     
+    transition-duration: 0.1s;
+}
+
+.button.removeButton{
+    background-color: var(--deleteColorFont);
+    color: white;
+    border: 2px solid var(--deleteColorFont);
+    transition-duration: 0.1s;
+    padding: 0px;
+}
+
+.button.removeButton:hover{
+    color: var(--deleteColorFont);
+    background-color: var(--mainColorFont);
     transition-duration: 0.1s;
 }
 

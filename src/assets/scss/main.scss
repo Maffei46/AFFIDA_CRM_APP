@@ -9,11 +9,14 @@
     --Color2Hover: rgb(30, 30, 30);
     --NavbarShadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
     --Color3: rgb(14, 14, 14);
+    --Color4: rgb(16, 16, 16); 
 
     --addColorFont: rgb(45, 173, 45);
     --addColorHoverFont: rgb(38, 147, 38);
     --deleteColorFont: rgb(255, 0, 0);
     --TitleBarHeight: 40px;
+    --SubMenuHeight: 29px;
+    --LocationPathHeight: 20px;
     --MenuWidth: 200px;
     --ScrollBarWidth: 15px;
 }
@@ -51,7 +54,6 @@ a{
 
 ::-webkit-scrollbar {
     width: var(--ScrollBarWidth);
-
 }
 
 /* Track */
@@ -65,17 +67,19 @@ margin-bottom: 5px;
 ::-webkit-scrollbar-thumb {
 background: var(--Color2);
 border-right: 5px solid var(--mainBGColor);
-
 }
 
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
 background: var(--Color2);
+
 }
 
 @import url('./loaders.scss');
 @import url('./form.scss');
 @import url('./submenu.scss');
+@import url('./vue-notification.scss');
+@import url('./pagination.scss');
 
 
 

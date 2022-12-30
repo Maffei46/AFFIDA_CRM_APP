@@ -2,13 +2,12 @@
     <div id="filter">
         <div class="filterButton noselect" @click="opened = !opened">
             <i class="material-icons">filter_alt</i>
-            <div class="key">F</div>
         </div>
 
         <div class="opened" v-if="opened">
             <div class="bg" @click="opened = false"></div>
             <div class="modal">
-                <form>
+                <form @submit="(e)=>{return e.preventDefault();}">
                 <div class="top">
                     <div class="left">
                         <div class="secTitle">ORDINAMENTO</div>
@@ -65,6 +64,11 @@ export default {
             }
         }
     },
+    watch:{
+        opened (){
+            this.setupListenerForEsc();
+        }
+    },
     methods:{
         apply(){
             this.applyFilters(this.filters);
@@ -77,9 +81,21 @@ export default {
                 gruppo: 'Tutti'
             }
             this.applyFilters(this.filters);
+        },
+        checkEscPressed(event){
+            var isEscape = (event.key === "Escape" || event.key === "Esc")
+            if(isEscape) this.opened = false;
+        }
+        ,setupListenerForEsc(){
+            if(this.opened){
+                addEventListener('keydown', this.checkEscPressed);
+            }else{
+                removeEventListener('keydown', this.checkEscPressed);
+            }
         }
     },
     mounted(){
+        this.setupListenerForEsc();
     }
 }
 </script>
@@ -94,7 +110,7 @@ export default {
     width: 50px;
     height: 50px;
     border-radius: 5px;
-    right: calc(var(--ScrollBarWidth) + 10px);
+    right: calc(var(--ScrollBarWidth) + 5px);
     box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
     cursor: pointer;
     z-index: 61;

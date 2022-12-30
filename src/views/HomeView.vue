@@ -1,30 +1,39 @@
 <template>
   <div class="home">
+    <LocationPath />
+    <div class="sectionTitle"><i class="material-icons">home</i> Home</div>
     <div class="sections">
 
       <router-link to="/login" v-if="!logged">
-        <div class="section">
+        <div class="section noselect">
           <div class="icon"><i class="material-icons">login</i></div>
           <div class="name">LOGIN</div>
         </div>
       </router-link>
 
       <router-link to="/logged/agenti" v-if="logged">
-        <div class="section">
+        <div class="section noselect">
           <div class="icon"><i class="material-icons">group</i></div>
           <div class="name">AGENTI</div>
         </div>
       </router-link>
 
       <router-link to="/logged/pratiche" v-if="logged">
-        <div class="section">
+        <div class="section noselect">
           <div class="icon"><i class="material-icons">payments</i></div>
           <div class="name">PRATICHE</div>
         </div>
       </router-link>
 
+      <router-link to="/logged/sistema" v-if="logged">
+        <div class="section noselect">
+          <div class="icon"><i class="material-icons">developer_board</i></div>
+          <div class="name">SISTEMA</div>
+        </div>
+      </router-link>
+
       <router-link to="/settings">
-        <div class="section">
+        <div class="section noselect">
           <div class="icon"><i class="material-icons">settings</i></div>
           <div class="name">SETTINGS</div>
         </div>

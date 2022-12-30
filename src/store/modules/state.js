@@ -31,7 +31,6 @@ const getters = {
 //  INTERNET CONNECTION --------
 const updateOnlineStatus = () => {
     state.onLine = navigator.onLine ? true : false;
-    console.log(state)
 }
 window.addEventListener('online', updateOnlineStatus)
 window.addEventListener('offline', updateOnlineStatus)
@@ -49,7 +48,7 @@ const actions = {
         state.login = res.login;
         state.darkMode = res.darkMode;
         state.stateFetched = true;
-        console.log('STATE FATCHED',state);
+        //console.log('STATE FATCHED',state);
     },
     async loginAction({state},form){
         try{

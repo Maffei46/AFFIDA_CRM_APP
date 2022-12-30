@@ -2,6 +2,7 @@
   <div>
     <TitleBar />
     <UpdatesComponent :done="updatesDone" />
+    <notifications group="mainGroup" />
     <div class="mainContent">
       <router-view/>  
     </div>
@@ -17,7 +18,8 @@ export default {
   methods:{
     ...mapActions(['fetchState']),
     updatesDone(done){
-      console.log('Updates Ended: ',done)
+      var print = false;
+      if(print) console.log('Updates Ended: ',done)
     },
     appHeight(){
       const doc = document.documentElement;
@@ -33,6 +35,7 @@ export default {
         document.documentElement.style.setProperty('--Color2Hover', 'rgb(30, 30, 30)');
         document.documentElement.style.setProperty('--NavbarShadow', 'rgba(0, 0, 0, 0.35) 0px 5px 15px');
         document.documentElement.style.setProperty('--Color3', 'rgb(14, 14, 14)');
+        document.documentElement.style.setProperty('--Color4', 'rgb(16, 16, 16)');
       }else{            //LIGHTMODE
         document.documentElement.style.setProperty('--mainColor', 'rgb(24, 24, 24)');
         document.documentElement.style.setProperty('--mainColorFont', 'rgb(24, 24, 24)');
@@ -41,6 +44,7 @@ export default {
         document.documentElement.style.setProperty('--Color2Hover', 'rgb(225, 225, 225)');
         document.documentElement.style.setProperty('--NavbarShadow', 'none');
         document.documentElement.style.setProperty('--Color3', 'rgb(205, 205, 205)');
+        document.documentElement.style.setProperty('--Color4', 'rgb(230, 230, 230)');
       }
     }
   },

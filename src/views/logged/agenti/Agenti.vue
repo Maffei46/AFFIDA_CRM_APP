@@ -15,8 +15,11 @@
             <router-link to="/logged/agenti/list">
                 <div class="link">LISTA</div>
             </router-link>
-            <router-link to="">
+            <router-link to="/">
                 <div class="link">NUOVO</div>
+            </router-link>
+            <router-link to="/logged/agenti/accessi">
+                <div class="link">ACCESSI</div>
             </router-link>
         </div>
         <router-view></router-view>
@@ -31,9 +34,16 @@ export default {
     },
     methods:{
         goBack(){
+
+            if(this.$route.query.bl) return this.$router.push(this.$route.query.bl);
             if(this.$route.name == "Agente") return this.$router.push('/logged/agenti/list');
-            if(this.$route.name == "Agenti List") return this.$router.push('/');
+            if(this.$route.name == "Agenti List") return this.$router.push('/logged/agenti/hub');
+            if(this.$route.name == "Agenti Accessi") return this.$router.push('/logged/agenti/hub');
+
+            return this.$router.push('/');
         }
+    },
+    mounted(){
     }
 }
 </script>

@@ -3,25 +3,31 @@ const {ipcMain} = require("electron");
 
 let win;
 let store;
-module.exports.start = function(win,store){
+let basePath;
+module.exports.start = function(basePath,win,store){
     this.win = win;
     this.store = store;
+    this.basePath = basePath;
 
-    ipcMain.handle('state/rememberCredentials', (event,data) => {
+    // state/rememberCredentials
+    ipcMain.handle(basePath+'/rememberCredentials', (event,data) => {
         store.set('login.username',data.username);
         store.set('login.password',data.password);
         store.set('login.rememberCredentials',data.rememberCredentials);
     });
 
-    ipcMain.handle('state/autoLogin', (event,data) => {
+    // state/autoLogin
+    ipcMain.handle(basePath+'/autoLogin', (event,data) => {
         store.set('login.autoLogin',data);
     });
 
-    ipcMain.handle('state/darkMode', (event,data) => {
+    // state/darkMode
+    ipcMain.handle(basePath+'/darkMode', (event,data) => {
         store.set('state.darkMode',data);
     });
     
-    ipcMain.handle('state',(event) => {
+    // state
+    ipcMain.handle(basePath,(event) => {
         return {
             login:{
                 username: store.get('login.username') || null,

@@ -1,0 +1,28 @@
+.VuePagination__pagination{
+    display: flex;
+    column-gap: 2px;
+    list-style: none;
+}
+
+.VuePagination__pagination-item{
+    text-decoration: none;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    cursor: pointer;
+    
+}
+.VuePagination__pagination-item:hover{
+    transform: scale(1.5);
+}
+
+.VuePagination__pagination-item.active{
+    font-weight: 800;
+}
+
+.VuePagination__count{
+    display: none;
+}

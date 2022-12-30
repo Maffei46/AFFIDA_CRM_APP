@@ -1,5 +1,7 @@
 <template>
     <div id="agentiList">
+        <LocationPath :routes="[{n:'Agenti',p:'/agenti',i:'group'},{n:'Lista',i:'format_list_bulleted'}]" />
+        <div class="sectionTitle"><i class="material-icons">group</i> Agenti - Lista</div>
         <div class="loading" v-if="loading"><div class="lds-ring"><div></div><div></div><div></div><div></div></div></div>
         <div class="agenti">
             <AgentePreview :agente="agente" v-for="agente in agentiLocal.slice(0,currentShowing)" :key="agente._id" />
@@ -51,15 +53,18 @@ export default {
     },
     computed: mapGetters(['agenti']),
     mounted(){
-        addEventListener('keypress', (event) => {
-            if(event.code == "KeyF"){
-                this.$refs.AgentiFilterComponent.opened = !this.$refs.AgentiFilterComponent.opened;
-            }
-        });
-        this.agenti_fetchAll().then(()=>{
-            this.loading = false;
-            this.agentiLocal = JSON.parse(JSON.stringify(this.agenti));
-        });
+        // addEventListener('keypress', (event) => {
+        //     if(event.code == "KeyF"){
+        //         this.$refs.AgentiFilterComponent.opened = !this.$refs.AgentiFilterComponent.opened;
+        //     }
+        // });
+        setTimeout(() => {
+            this.agenti_fetchAll().then(()=>{
+                this.loading = false;
+                this.agentiLocal = JSON.parse(JSON.stringify(this.agenti));
+            });
+        }, 0);
+        
     }
 }
 </script>

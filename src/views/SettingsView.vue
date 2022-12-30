@@ -1,5 +1,7 @@
 <template>
     <div id="settings">
+        <LocationPath :routes="[{n:'Settings',p:'/settings',i:'settings'}]" />
+        <div class="sectionTitle"><i class="material-icons">settings</i> Settings</div>
         <div class="subMenu">
             <router-link to="/">
                 <div class="back">

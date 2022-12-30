@@ -47,8 +47,8 @@ export default {
             this.restart = false;
         })
 
-        ipcRenderer.on('updates/available',(res) =>{
-            if(res.available){
+        ipcRenderer.on('updates/available',(res,data) =>{
+            if(data.available){
                 this.state = 1;
             }else{
                 this.state = -1;
@@ -57,9 +57,9 @@ export default {
             
         })
 
-        ipcRenderer.on('updates/downloading',(res) =>{
+        ipcRenderer.on('updates/downloading',(res,data) =>{
             this.state = 2;
-            this.downloadPercentual = res.progressObj.percent;
+            this.downloadPercentual = data.progressObj.percent;
         })
 
         ipcRenderer.on('updates/downloaded',() =>{

@@ -12,7 +12,7 @@
 
 <script>
 export default {
-    props:['agente']
+    props:['agente'],
 }
 </script>
 

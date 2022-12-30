@@ -1,5 +1,6 @@
 <template>
     <div id="login">
+        <LocationPath :routes="[{n:'Login',p:'/login',i:'login'}]" />
         <div class="loading" v-if="loading"><div class="lds-ring"><div></div><div></div><div></div><div></div></div></div>
         <form @submit="sendForm">
             <div class="formName">LOGIN</div>
