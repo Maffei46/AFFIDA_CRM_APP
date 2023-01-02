@@ -436,25 +436,132 @@ export default {
                 var polizza_banca = this.calculatePolizzaBanca(pratica);
                 var storno = this.calculateStorno(pratica);
 
-                var obj = {
-                    pratica: pratica,
-                    payin: payin,
-                    istruttoria: istruttoria,
-                    polizza_banca: polizza_banca,
-                    storno:storno,
-                }
-                this.dati.push(obj);
-            });
+                const nc = ';';
+                const nr = '\r\n';
+                var row = `${pratica.IDEGG}${nc}${pratica.tipo}${nc}${pratica.cliente.nome} ${pratica.cliente.cognome}${nc}`;
+                //AGENTE
+                row += `${pratica.agente.nome} ${pratica.agente.cognome}${nc}`;
 
-            console.log(this.dati);
-            this.loading = false;
+                //TEAMLEADER
+                if(pratica.agente.teamLeader){
+                    var tl = this.agenteByID(pratica.agente.teamLeader);
+                    row += `${tl.nome} ${tl.cognome}${nc}`;
+                }else{ row += `${nc}`; }
+
+                //EXECUTIVE
+                if(pratica.agente.executive){
+                    var ex = this.agenteByID(pratica.agente.executive);
+                    row += `${ex.nome} ${ex.cognome}${nc}`;
+                }else{ row += `${nc}`; }
+
+                //TOPEXECUTIVE
+                if(pratica.agente.topExecutive){
+                    var te = this.agenteByID(pratica.agente.topExecutive);
+                    row += `${te.nome} ${te.cognome}${nc}`;
+                }else{ row += `${nc}`; }
+
+                //HEADEXECUTIVE
+                if(pratica.agente.headExecutive){
+                    var he = this.agenteByID(pratica.agente.headExecutive);
+                    row += `${he.nome} ${he.cognome}${nc}`;
+                }else{ row += `${nc}`; }
+
+                //PAYIN
+                row += `${payin.provvigione_netta.agente}${nc}${payin.provvigione_netta.teamleader}${nc}${payin.provvigione_netta.executive}${nc}${payin.provvigione_netta.topExecutive}${nc}${payin.provvigione_netta.headExecutive}${nc}`;
+
+                //ISTRUTTORIA
+                row += `${istruttoria.provvigione_netta.agente}${nc}${istruttoria.provvigione_netta.teamleader}${nc}${istruttoria.provvigione_netta.executive}${nc}${istruttoria.provvigione_netta.topExecutive}${nc}${istruttoria.provvigione_netta.headExecutive}${nc}`;
+
+                //POLIZZA BANCA
+                row += `${polizza_banca.provvigione_netta.agente}${nc}${polizza_banca.provvigione_netta.teamleader}${nc}${polizza_banca.provvigione_netta.executive}${nc}${polizza_banca.provvigione_netta.topExecutive}${nc}${polizza_banca.provvigione_netta.headExecutive}${nc}`;
+
+                //STORNO
+                row += `${storno.provvigione_netta.agente}${nc}${storno.provvigione_netta.teamleader}${nc}${storno.provvigione_netta.executive}${nc}${storno.provvigione_netta.topExecutive}${nc}${storno.provvigione_netta.headExecutive}`;
+
+                row += `${nr}`;
+                this.dati.push(row);
+                
+                //SEGNALA COLLEGA
+                if(pratica.segnalaCollega){
+                    if(pratica.segnalaCollega.agente){
+                        this.createSegnalaCollega(pratica,{
+                            payin: payin.provvigione_segnala_collega,
+                            istruttoria: istruttoria.provvigione_segnala_collega,
+                            polizza_banca: polizza_banca.provvigione_segnala_collega,
+                            storno: storno.provvigione_segnala_collega,
+                        });
+                    }
+                }
+
+                //TANDEM
+                if(pratica.tandem){
+                    if(pratica.tandem.agente){
+                        this.createTandem(pratica,payin.tandem_importo);
+                    }
+                }
+            });
+            this.createCSV();
+            
+        },
+        createSegnalaCollega(pratica,segnalaCollega){
+            const nc = ';';
+            const nr = '\r\n';
+            var row = `${pratica.IDEGG}${nc}${pratica.tipo}${nc}${pratica.cliente.nome} ${pratica.cliente.cognome}${nc}`;
+            var agente = this.agenteByID(pratica.segnalaCollega.agente);
+            if(!agente) return;
+            //AGENTE
+            row += `${agente.nome} ${agente.cognome}${nc}${nc}${nc}${nc}${nc}`;
+            //PAYIN
+            row += `${segnalaCollega.payin}${nc}${nc}${nc}${nc}${nc}`;
+            //ISTRUTTORIA
+            row += `${segnalaCollega.istruttoria}${nc}${nc}${nc}${nc}${nc}`;
+            //POLIZZA BANCA
+            row += `${segnalaCollega.polizza_banca}${nc}${nc}${nc}${nc}${nc}`;
+            //STORNO
+            row += `${segnalaCollega.storno}${nc}${nc}${nc}${nc}${nc}`;
+
+            row += `${nr}`;
+            this.dati.push(row);
+        },
+        createTandem(pratica,importo){
+            const nc = ';';
+            const nr = '\r\n';
+            var row = `${pratica.IDEGG}${nc}${pratica.tipo}${nc}${pratica.cliente.nome} ${pratica.cliente.cognome}${nc}`;
+            var agente = this.agenteByID(pratica.tandem.agente);
+            if(!agente) return;
+            //AGENTE
+            row += `${agente.nome} ${agente.cognome}${nc}${nc}${nc}${nc}${nc}`;
+            //PAYIN
+            row += `${importo}${nc}${nc}${nc}${nc}${nc}`;
+            //ISTRUTTORIA
+            row += `${nc}${nc}${nc}${nc}${nc}`;
+            //POLIZZA BANCA
+            row += `${nc}${nc}${nc}${nc}${nc}`;
+            //STORNO
+            row += `${nc}${nc}${nc}${nc}${nc}`;
+
+            row += `${nr}`;
+            this.dati.push(row);
         },
         createCSV(){
             const nc = ';';
-            const nr = '\n';
-            var header = `IDEGG${nc}CLIENTE${nc}BANCA${nc}FINALITA${nc}STATO${nc}TIPO${nc}TIPOLOGIA${nc}PROVINCIA${nc}LEADID${nc}CANALE${nc}CAMPAGNA${nc}CAMPAGNA NASCOSTA${nc}MEDIAZIONE PAGATA${nc}MEDIAZIONE IMPORTO${nc}MEDIAZIONE DATA${nc}AGENTE${nc}HOVER AGENTE${nc}HOVER TEAMLEADER ${nc}HOVER EXECUTIVE${nc}HOVER TOPEXECUTIVE${nc}HOVER HEADEXECUTIVE${nc}IMPORTO${nc}IMPORTO FINANZIATO${nc}MONTANTE${nr}`;
+            const nr = '\r\n';
+            var header = `IDEGG${nc}PRODOTTO${nc}CLIENTE${nc}AGENTE${nc}TEAMLEADER${nc}EXECUTIVE${nc}TOPEXECUTIVE${nc}HEADEXECUTIVE${nc}BANCA${nc}PAYIN${nc}PAYIN AGENTE${nc}PAYIN TEAMLEADER${nc}PAYIN EXECUTIVE${nc}PAYIN TOPEXECUTIVE${nc}PAYIN HEADEXECUTIVE${nc}ISTRUTTORIA${nc}ISTRUTTORIA AGENTE${nc}ISTRUTTORIA TEAMLEADER${nc}ISTRUTTORIA EXECUTIVE${nc}ISTRUTTORIA TOPEXECUTIVE${nc}ISTRUTTORIA HEADEXECUTIVE${nc}POLIZZA BANCA${nc}POLIZZA BANCA AGENTE${nc}POLIZZA BANCA TEAMLEADER${nc}POLIZZA BANCA EXECUTIVE${nc}POLIZZA BANCA TOPEXECUTIVE${nc}POLIZZA BANCA HEADEXECUTIVE${nc}STORNO${nc}STORNO AGENTE${nc}STORNO TEAMLEADER${nc}STORNO EXECUTIVE${nc}STORNO TOPEXECUTIVE${nc}STORNO HEADEXECUTIVE${nr}`;
+            var csv = header;
+            this.dati.forEach(d => {
+                csv += d;
+            });
+            //console.log(csv);
+            const a = document.createElement("a");
+            a.href = URL.createObjectURL(new Blob([csv],{
+                type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            }));
+            a.setAttribute("download","provvigioni.csv");
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
 
-            console.log(header);
+            this.loading = false;
         }
     },
     computed: mapGetters(['agenteByID']),

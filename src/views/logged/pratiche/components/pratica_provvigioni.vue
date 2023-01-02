@@ -727,7 +727,7 @@
                         <div class="hrTitle">SEGNALA COLLEGA</div>    
                     </div>
                     <div class="input">
-                        <div class="fakeInput">{{STRN_prov_segnala_collega = moneyFormat(segnalaCollega(STRN_provL_a - STRN_dealer_a))}} €</div>
+                        <div class="fakeInput">{{STRN_prov_segnala_collega = moneyFormat(segnalaCollega(STRN_provL_a))}} €</div>
                         <div class="label fakeInputLabel">PROVVIGIONE</div>
                     </div>
 

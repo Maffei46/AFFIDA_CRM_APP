@@ -43,14 +43,17 @@ export default {
         ipcRenderer.invoke('updates/check');
         
         ipcRenderer.on('updates/checking',() =>{
+            console.log('Aggiornamenti: Controllo');
             this.state = 0;
             this.restart = false;
         })
 
         ipcRenderer.on('updates/available',(res,data) =>{
             if(data.available){
+                console.log('Aggiornamenti: Disponibili');
                 this.state = 1;
             }else{
+                console.log('Aggiornamenti: Non Disponibili');
                 this.state = -1;
                 this.done(false);
             }
@@ -58,6 +61,7 @@ export default {
         })
 
         ipcRenderer.on('updates/downloading',(res,data) =>{
+            console.log('Aggiornamenti: Downloading - '+data.progressObj.percent+'%');
             this.state = 2;
             this.downloadPercentual = data.progressObj.percent;
         })
@@ -66,11 +70,12 @@ export default {
             this.state = 3;
             this.restart = true;
             this.downloadPercentual = 0;
-            //this.done(true);
+            console.log('Aggiornamenti: Downloaded');
+            this.done(true);
         })
 
         ipcRenderer.on('updates/error',(error) =>{
-            console.log(error);
+            console.log('Aggiornamenti: Error',error);
             this.done(false);
         })
     }

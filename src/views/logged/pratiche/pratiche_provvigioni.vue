@@ -162,7 +162,9 @@ export default {
 
         },
         formatDate(d){
-            var data = new Date(d.mese+'-'+d.giorno+'-'+d.anno);
+            if(!d) return;
+            if(!d.date) return;
+            var data = new Date(d.date);
             return data.toLocaleDateString()
         },
         finance(eur){
