@@ -22,11 +22,12 @@
 
 <script>
 import { mapActions } from 'vuex';
+const {ipcRenderer} = require('electron');
 export default {
     methods:{
         ...mapActions(['changeDarkMode']),
         checkUpdates(){
-            window.API.invoke('updates/check');
+            ipcRenderer.invoke('updates/check');
         },
         changeMode(){
             this.changeDarkMode();
