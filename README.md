@@ -25,11 +25,6 @@ Unica modifica c'era bisogno di un preload.js al cui interno erano presenti le f
 
 Unico problema non risolto era il fatto che non fosse possibile utilizzare mongoose, per tanto è stato necessario fare un downgrade ad un progetto precedentemente funzionante per potersi collegare al database.
 
-## SASS PROBLEMS
-1) Cancellare node_modules
-2) npm install
-3) npm istall node-sass
-4) npm install -D sass-loader@^10 sass
 
 
 ## TODO
