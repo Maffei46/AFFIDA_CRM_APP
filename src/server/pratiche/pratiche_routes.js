@@ -29,7 +29,6 @@ module.exports.start = function(basePath,win,store){
             "Annullata-K",
             "Stipulata/Liquidata - INCOMPLETA",
             "S.",
-
         ]
         return JSON.stringify(pratiche);
     })

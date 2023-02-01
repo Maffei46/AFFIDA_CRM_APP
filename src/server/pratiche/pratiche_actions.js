@@ -331,6 +331,21 @@ async function InsertUpdate(pratica,agents,banks,agenzie,leads,leadsEGG, print =
     const id_mediazioneImporto = "c__LQXcuyXM";
     const id_mediaziioneData = "c__CsopZwvj";
 
+    if(pratica.laststato == 'E.'){
+        return new Promise(async (resolve,reject)=>{
+            if(!pratica.praticaID) return reject(`ERR: [${pratica.praticaID}] PRATICAID NON TROVATO`);
+            var founded = await Pratiche.findOne({IDEGG: Number(pratica.praticaID)});
+            if(founded){
+                Pratiche.findOneAndDelete({_id:founded._id}).then(()=>{
+                    return resolve();
+                })    
+            }else{
+                return resolve();
+            }
+            
+        }) 
+    }
+
     return new Promise(async (resolve,reject)=>{
         if(!pratica.praticaID) return reject(`ERR: [${pratica.praticaID}] PRATICAID NON TROVATO`);
         if(!pratica.tipo) return reject(`ERR: [${pratica.praticaID}] PRATICA TIPO NON TROVATO`);
