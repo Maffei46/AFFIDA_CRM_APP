@@ -184,8 +184,18 @@ function findAgentID(IDEGG,agents){
     if(index == -1) return null;
     return agents[index];
 }
+function findAgent_ID(_id,agents){
+    var index = agents.findIndex(e => e._id == _id);
+    if(index == -1) return null;
+    return agents[index];
+}
 function findBankID(IDEGG,banks){
     var index = banks.findIndex(e => e.IDEGG == IDEGG);
+    if(index == -1) return null;
+    return banks[index];
+}
+function findBank_ID(_id,banks){
+    var index = banks.findIndex(e => e._id == _id);
     if(index == -1) return null;
     return banks[index];
 }
@@ -352,10 +362,12 @@ async function InsertUpdate(pratica,agents,banks,agenzie,leads,leadsEGG, print =
         if(!pratica.laststato) return reject(`ERR: [${pratica.praticaID}] PRATICA STATO NON TROVATO`);
 
         var agente = findAgentID(pratica.agenteIDattuale,agents);
-        if(!agente) return reject(`ERR: [${pratica.praticaID}] Agente: ${pratica.agente} (${pratica.agenteIDattuale}) -  IDEGG NON TROVATO`);
+        if(!agente) agente = findAgent_ID('63e3c09aac2e82001b19ad9b',agents);
+        //if(!agente) return reject(`ERR: [${pratica.praticaID}] Agente: ${pratica.agente} (${pratica.agenteIDattuale}) -  IDEGG NON TROVATO`);
 
         var banca = findBankID(pratica.anagraficabancaID,banks);
-        if(!banca) return reject(`ERR: [${pratica.praticaID}] Banca: ${pratica.istituto} (${pratica.anagraficabancaID}) -  IDEGG NON TROVATO`);
+        if(!banca) banca = findBank_ID('63e3c239ac2e82001b19ad9d',banks);
+        //if(!banca) return reject(`ERR: [${pratica.praticaID}] Banca: ${pratica.istituto} (${pratica.anagraficabancaID}) -  IDEGG NON TROVATO`);
 
         var lead = undefined;
         if(pratica.dataliquidazione && pratica.campagnaID && pratica.campagnaID!=0){
