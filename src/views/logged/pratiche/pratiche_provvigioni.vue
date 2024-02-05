@@ -25,6 +25,7 @@
                 <button type="submit">CERCA</button>
             </div>
         </form>
+
         <div class="pratiche">
             <div class="top">
                 <div class="IDEGG" @click="sort('IDEGG')">IDEGG 
@@ -57,22 +58,19 @@
                     <i class="material-icons" v-if="(sorting=='agente' && asc)">arrow_downward</i>
                 </div>
 
-                <div class="dataCaricamento">Liquidazione
+                <div class="tipo" @click="sort('tipo')">Tipo
+                    <i class="material-icons" v-if="(sorting=='tipo' && !asc)">arrow_upward</i>
+                    <i class="material-icons" v-if="(sorting=='tipo' && asc)">arrow_downward</i>
                 </div>
 
-                <!-- <div class="stato" @click="sort('stato')">Stato
-                    <i class="material-icons" v-if="(sorting=='stato' && !asc)">arrow_upward</i>
-                    <i class="material-icons" v-if="(sorting=='stato' && asc)">arrow_downward</i>
-                </div> -->
-
-                <!-- <div class="statusComplete" @click="sort('statusComplete')">
-                    <Hover hoverTxt="Percentuale Completamento">%</Hover>
-                    <i class="material-icons" v-if="(sorting=='statusComplete' && !asc)">arrow_upward</i>
-                    <i class="material-icons" v-if="(sorting=='statusComplete' && asc)">arrow_downward</i>
-                </div> -->
+                <div class="dataCaricamento" @click="sort('dataLiquidazione')">Liquidazione
+                    <i class="material-icons" v-if="(sorting=='dataLiquidazione' && !asc)">arrow_upward</i>
+                    <i class="material-icons" v-if="(sorting=='dataLiquidazione' && asc)">arrow_downward</i>
+                </div>
                 
-                <div class="importo">
-                    Importo
+                <div class="importo" @click="sort('importo')">Importo
+                    <i class="material-icons" v-if="(sorting=='importo' && !asc)">arrow_upward</i>
+                    <i class="material-icons" v-if="(sorting=='importo' && asc)">arrow_downward</i>
                 </div>
 
                 <div class="payin">
@@ -100,16 +98,17 @@
                 </div>
             </div>
             <div class="bottom">
-                <div class="pratica" v-for="pratica in lastProvvigioni" :key="pratica._id" @click="openPratica(pratica._id)">
+                <div class="pratica" v-for="pratica in filtredPratiche" :key="pratica._id" @click="openPratica(pratica._id)">
                     <div class="sect IDEGG">{{pratica.IDEGG}}</div>
                     <div class="sect dataCaricamento">{{formatDate(pratica.dataCaricamento)}}</div>
                     <div class="sect dataCaricamento">{{new Date(pratica.lastEdit).toLocaleDateString()}}</div>
-                    <div class="sect cliente">{{pratica.cliente.nome}} {{pratica.cliente.cognome}}</div>
+                    <div class="sect cliente">{{pratica.cliente.cognome}} {{pratica.cliente.nome}}</div>
                     <div class="sect banca">{{pratica.banca.name}}</div>
-                    <div class="sect agente">{{pratica.agente.nome}} {{pratica.agente.cognome}}</div>
+                    <div class="sect agente">{{pratica.agente.cognome}} {{pratica.agente.nome}}</div>
+                    <div class="sect tipo">{{ pratica.tipo }}</div>
                     <div class="sect dataCaricamento">{{formatDate(pratica.dataLiquidazione)}}</div>
                     <!-- <div class="sect statusComplete">{{pratica.statusComplete}}%</div> -->
-                    <div class="sect importo">{{pratica.tipo == 'Mutuo Immobile'?finance(pratica.importoFinanziato):finance(pratica.montante)}}</div>
+                    <div class="sect importo">{{finance(GetImporto(pratica))}}</div>
                     <div class="sect payin">{{finance(pratica.payin)}}</div>
                     <div class="sect payin">{{finance(pratica.istruttoria)}}</div>
                     <div class="sect payin">{{finance(pratica.polizza_banca)}}</div>
@@ -120,8 +119,10 @@
                 </div>
             </div>
         </div>
-        <div class="prat">{{lastProvvigioni.length}} Pratiche</div>
+        <div class="prat">{{filtredPratiche.length}} / {{lastProvvigioni.length}} Pratiche</div>
         <ExportPratiche :pratiche="lastProvvigioni"/>
+
+        <PraticheProvvigioniFilter :pratiche="lastProvvigioni" />
     </div>
 </template>
 
@@ -129,8 +130,10 @@
 import { mapActions, mapGetters } from 'vuex';
 import Hover from '../../../components/hover.vue'
 import ExportPratiche from './components/pratiche_export.vue'
+import PraticheProvvigioniFilter from './components/pratiche_provvigioni_filter.vue'
+
 export default {
-    components:{Hover,ExportPratiche},
+    components:{Hover,ExportPratiche,PraticheProvvigioniFilter},
     data() {
         return {
             loading: false,
@@ -144,6 +147,7 @@ export default {
                 anno:'',
             },
             pratiche:[],
+            filtredPratiche:[],
             asc:true,
             sorting:'lastEdit',
         }
@@ -156,10 +160,165 @@ export default {
             this.loading = true;
             this.pratiche_fetchProvvigioni(this.form).then(()=>{
                 this.loading = false;
+                this.filtredPratiche = this.lastProvvigioni;
             })
         },
-        sort(){
+        setFiltredPratiche(pratiche){
+            this.filtredPratiche = pratiche;
+        },
+        sort(sortBy){            
+            if(this.sorting != sortBy){
+                this.asc = true;
+            }else{
+                this.asc = !this.asc;
+            }
+            this.sorting = sortBy;
+            
 
+            if(sortBy == "IDEGG"){
+                if(this.asc){
+                    this.filtredPratiche = this.filtredPratiche.sort((a,b) => {
+                        if(Number(a.IDEGG) > Number(b.IDEGG)) return 1;
+                        return -1;
+                    })
+                }else{
+                    this.filtredPratiche = this.filtredPratiche.sort((a,b) => {
+                        if(Number(a.IDEGG) > Number(b.IDEGG)) return -1;
+                        return 1;
+                    })
+                }
+            }
+
+            if(sortBy == "dataCaricamento"){
+                if(this.asc){
+                    this.filtredPratiche = this.filtredPratiche.sort((a,b) => {
+                        if(!a.dataCaricamento) return -1;
+                        if(!b.dataCaricamento) return 1;
+                        if(a.dataCaricamento.date > b.dataCaricamento.date) return 1;
+                        return -1;
+                    })
+                }else{
+                    this.filtredPratiche = this.filtredPratiche.sort((a,b) => {
+                        if(!a.dataCaricamento) return 1;
+                        if(!b.dataCaricamento) return -1;
+                        if(a.dataCaricamento.date > b.dataCaricamento.date) return -1;
+                        return 1;
+                    })
+                }
+                
+            }
+
+            if(sortBy == "lastEdit"){
+                if(this.asc){
+                    this.filtredPratiche = this.filtredPratiche.sort((a,b) => {
+                        if(a.lastEdit > b.lastEdit) return -1;
+                        return 1;
+                    })
+                }else{
+                    this.filtredPratiche = this.filtredPratiche.sort((a,b) => {
+                        if(a.lastEdit > b.lastEdit) return 1;
+                        return -1;
+                    })
+                }
+            }
+
+            if(sortBy == "cliente"){
+                if(this.asc){
+                    this.filtredPratiche = this.filtredPratiche.sort((a,b) => {
+                        var aName = a.cliente.cognome+a.cliente.nome;
+                        var bName = b.cliente.cognome+b.cliente.nome;
+                        if(aName > bName) return -1;
+                        return 1;
+                    })
+                }else{
+                    this.filtredPratiche = this.filtredPratiche.sort((a,b) => {
+                        var aName = a.cliente.cognome+a.cliente.nome;
+                        var bName = b.cliente.cognome+b.cliente.nome;
+                        if(aName > bName) return 1;
+                        return -1;
+                    })
+                }
+            }
+
+            if(sortBy == "banca"){
+                if(this.asc){
+                    this.filtredPratiche = this.filtredPratiche.sort((a,b) => {
+                        if(a.banca.name > b.banca.name) return -1;
+                        return 1;
+                    })
+                }else{
+                    this.filtredPratiche = this.filtredPratiche.sort((a,b) => {
+                        if(a.banca.name > b.banca.name) return 1;
+                        return -1;
+                    })
+                }
+            }
+
+            if(sortBy == "agente"){
+                if(this.asc){
+                    this.filtredPratiche = this.filtredPratiche.sort((a,b) => {
+                        var aName = a.agente.cognome+a.agente.nome;
+                        var bName = b.agente.cognome+b.agente.nome;
+                        if(aName > bName) return -1;
+                        return 1;
+                    })
+                }else{
+                    this.filtredPratiche = this.filtredPratiche.sort((a,b) => {
+                        var aName = a.agente.cognome+a.agente.nome;
+                        var bName = b.agente.cognome+b.agente.nome;
+                        if(aName > bName) return 1;
+                        return -1;
+                    })
+                }
+            }
+
+            if(sortBy == "tipo"){
+                if(this.asc){
+                    this.filtredPratiche = this.filtredPratiche.sort((a,b) => {
+                        if(a.tipo > b.tipo) return 1;
+                        return -1;
+                    })
+                }else{
+                    this.filtredPratiche = this.filtredPratiche.sort((a,b) => {
+                        if(a.tipo > b.tipo) return -1;
+                        return 1;
+                    })
+                }
+            }
+
+            if(sortBy == "dataLiquidazione"){
+                if(this.asc){
+                    this.filtredPratiche = this.filtredPratiche.sort((a,b) => {
+                        if(!a.dataLiquidazione) return 1;
+                        if(!b.dataLiquidazione) return -1;
+                        if(a.dataLiquidazione.date > b.dataLiquidazione.date) return -1;
+                        return 1;
+                    })
+                }else{
+                    this.filtredPratiche = this.filtredPratiche.sort((a,b) => {
+                        if(!a.dataLiquidazione) return -1;
+                        if(!b.dataLiquidazione) return 1;
+                        if(a.dataLiquidazione.date > b.dataLiquidazione.date) return 1;
+                        return -1;
+                    })
+                }
+                
+            }
+
+            if(sortBy == "importo"){
+                if(this.asc){
+                    this.filtredPratiche = this.filtredPratiche.sort((a,b) => {
+                        if(this.GetImporto(a) > this.GetImporto(b)) return -1;
+                        return 1;
+                    })
+                }else{
+                    this.filtredPratiche = this.filtredPratiche.sort((a,b) => {
+                        if(this.GetImporto(a) > this.GetImporto(b)) return 1;
+                        return -1;
+                    })
+                }
+                
+            }
         },
         formatDate(d){
             if(!d) return;
@@ -178,6 +337,11 @@ export default {
         openPratica(id){
             this.$router.push('/logged/pratiche/'+id+'?fromProv=true&bl='+encodeURIComponent('/logged/pratiche/provvigioni'));
         },
+        GetImporto(pratica){
+            if(pratica.tipo == "Prestito Personale") return pratica.importo;
+            if(pratica.tipo == "Mutuo Immobile") return pratica.importoFinanziato;
+            return pratica.montante;
+        }
     },
     computed: mapGetters(['lastProvvigioni','lastProvvigioniDate']),
     mounted(){
@@ -192,6 +356,10 @@ export default {
         if(this.lastProvvigioniDate){
             this.form.mese = this.lastProvvigioniDate.mese;
             this.form.anno = this.lastProvvigioniDate.anno;
+        }
+
+        if(this.lastProvvigioni){
+            this.filtredPratiche = this.lastProvvigioni;
         }
     }
 }
@@ -305,9 +473,20 @@ form{
             justify-content: right;
             align-items: center;
         }
+        .tipo{
+            width: 110px;
+            cursor: pointer;
+            &:hover{
+                font-size: 10pt;
+            }
+        }
         .importo{
             width: 100px;
             text-align: right;
+            cursor: pointer;
+            &:hover{
+                font-size: 10pt;
+            }
         }
         .payin{
             width: 85px;
@@ -341,7 +520,7 @@ form{
         padding-right: 5px;
         &:hover{
             background: var(--Color3);
-            transform: scale(1.02);
+            transform: scale(1.01);
             transition-duration: 0.05s;
         }
         .IDEGG{
@@ -356,6 +535,10 @@ form{
             width: 120px;
             overflow: hidden;
             height: 14px;
+        }
+        .tipo{
+            width: 110px;
+            
         }
         .banca{
             width: 100px;

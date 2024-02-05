@@ -18,8 +18,8 @@
         </p>
 
         <div class="sync">
-            <button @click="sync();">SINCRONIZZA TUTTO</button>
-            <button @click="chooseDate = true">SINCRONIZZA DA DATA</button>
+            <button @click="/*sync();*/" disabled>SINCRONIZZA TUTTO</button>
+            <button @click="/*chooseDate = true*/" disabled>SINCRONIZZA DA DATA</button>
         </div>
 
         <div class="open" v-if="result!=null">
@@ -76,6 +76,9 @@ export default {
     },
     methods:{
         sync(){
+            const disabled = true;
+            console.log('sync');
+            if(disabled) return;
             this.done = 0;
             this.doneStorico = 0;
             this.count = 0;
@@ -194,6 +197,12 @@ p{
         cursor: pointer;
         &:hover{
             background-color: rgb(191, 91, 14);
+        }
+        &:disabled{
+            opacity: 0.1;
+            &:hover{
+                background-color: rgb(255, 125, 26);
+            }
         }
     }
 }

@@ -85,6 +85,187 @@ module.exports.fetchAll = function(quantity){
     })
 }
 
+module.exports.fetchOne = function(id){
+    return new Promise(async (resolve,reject)=>{
+        var pratiche = await Pratiche.findOne({_id: id}).populate('campagna').populate('campagnaNascosta').populate('agente').populate('agenzia').populate('banca').populate('segnalaCollega.agente').populate('tandem.agente');
+        return resolve(pratiche);
+    })
+}
+
+module.exports.getFinalitas = function(){
+    return new Promise(async (resolve,reject)=>{
+        var finalita = await Pratiche.find().distinct('finalita');
+        return resolve(finalita);
+    })
+}
+
+module.exports.getTipos = function(){
+    return new Promise(async (resolve,reject)=>{
+        var tipo = await Pratiche.find().distinct('tipo');
+        return resolve(tipo);
+    })
+}
+
+module.exports.getTipologias = function(){
+    return new Promise(async (resolve,reject)=>{
+        var tipologia = await Pratiche.find().distinct('tipologia');
+        return resolve(tipologia);
+    })
+}
+
+module.exports.getStatos = function(){
+    return new Promise(async (resolve,reject)=>{
+        var stato = await Pratiche.find().distinct('stato');
+        return resolve(stato);
+    })
+}
+
+module.exports.fetch = function(data){
+    return new Promise(async (resolve,reject)=>{
+        
+        var sorting = (data.asc?'+':'-')+data.Sorting;
+        var limit = data.limit?data.limit:100;
+        var skip = data.Page?(data.Page*limit):0;
+
+
+        var query = {};
+        if(data.IDEGG){
+            query.IDEGG = {"$regex": data.IDEGG, "$options": "i"};
+        }
+        if(data.dataCaricamento){
+            if(data.dataCaricamento.min && !data.dataCaricamento.max){
+                query["dataCaricamento.date"] = { "$gte": StartDay(data.dataCaricamento.min)}
+            }else if(!data.dataCaricamento.min && data.dataCaricamento.max){
+                query["dataCaricamento.date"] = { "$lte": EndDay(data.dataCaricamento.max)}
+            }else if(data.dataCaricamento.min && data.dataCaricamento.max){
+                query["dataCaricamento.date"] = { 
+                    "$gte": StartDay(data.dataCaricamento.min),
+                    "$lte": EndDay(data.dataCaricamento.max)
+                }
+            }
+        }
+        if(data.dataLiquidazione){
+            if(data.dataLiquidazione.min && !data.dataLiquidazione.max){
+                query["dataLiquidazione.date"] = { "$gte": StartDay(data.dataLiquidazione.min)}
+            }else if(!data.dataLiquidazione.min && data.dataLiquidazione.max){
+                query["dataLiquidazione.date"] = { "$lte": EndDay(data.dataLiquidazione.max)}
+            }else if(data.dataLiquidazione.min && data.dataLiquidazione.max){
+                query["dataLiquidazione.date"] = { 
+                    "$gte": StartDay(data.dataLiquidazione.min),
+                    "$lte": EndDay(data.dataLiquidazione.max)
+                }
+            }
+        }
+        if(data.dataIncassoMediazione){
+            if(data.dataIncassoMediazione.min && !data.dataIncassoMediazione.max){
+                query["dataIncassoMediazione.date"] = { "$gte": StartDay(data.dataIncassoMediazione.min)}
+            }else if(!data.dataIncassoMediazione.min && data.dataIncassoMediazione.max){
+                query["dataIncassoMediazione.date"] = { "$lte": EndDay(data.dataIncassoMediazione.max)}
+            }else if(data.dataIncassoMediazione.min && data.dataIncassoMediazione.max){
+                query["dataIncassoMediazione.date"] = { 
+                    "$gte": StartDay(data.dataIncassoMediazione.min),
+                    "$lte": EndDay(data.dataIncassoMediazione.max)
+                }
+            }    
+        }
+        if(data.dataPassataInCaricamentoInBanca){
+            if(data.dataPassataInCaricamentoInBanca.min && !data.dataPassataInCaricamentoInBanca.max){
+                query["dataPassataInCaricamentoInBanca.date"] = { "$gte": StartDay(data.dataPassataInCaricamentoInBanca.min)}
+            }else if(!data.dataPassataInCaricamentoInBanca.min && data.dataPassataInCaricamentoInBanca.max){
+                query["dataPassataInCaricamentoInBanca.date"] = { "$lte": EndDay(data.dataPassataInCaricamentoInBanca.max)}
+            }else if(data.dataPassataInCaricamentoInBanca.min && data.dataPassataInCaricamentoInBanca.max){
+                query["dataPassataInCaricamentoInBanca.date"] = { 
+                    "$gte": StartDay(data.dataPassataInCaricamentoInBanca.min),
+                    "$lte": EndDay(data.dataPassataInCaricamentoInBanca.max)
+                }
+            }    
+        }
+        if(data.dataPassataInDeliberata){
+            if(data.dataPassataInDeliberata.min && !data.dataPassataInDeliberata.max){
+                query["dataPassataInDeliberata.date"] = { "$gte": StartDay(data.dataPassataInDeliberata.min)}
+            }else if(!data.dataPassataInDeliberata.min && data.dataPassataInDeliberata.max){
+                query["dataPassataInDeliberata.date"] = { "$lte": EndDay(data.dataPassataInDeliberata.max)}
+            }else if(data.dataPassataInDeliberata.min && data.dataPassataInDeliberata.max){
+                query["dataPassataInDeliberata.date"] = { 
+                    "$gte": StartDay(data.dataPassataInDeliberata.min),
+                    "$lte": EndDay(data.dataPassataInDeliberata.max)
+                }
+            }    
+        }
+        if(data.dataPassataInAttesaStipula){
+            if(data.dataPassataInAttesaStipula.min && !data.dataPassataInAttesaStipula.max){
+                query["dataPassataInAttesaStipula.date"] = { "$gte": StartDay(data.dataPassataInAttesaStipula.min)}
+            }else if(!data.dataPassataInAttesaStipula.min && data.dataPassataInAttesaStipula.max){
+                query["dataPassataInAttesaStipula.date"] = { "$lte": EndDay(data.dataPassataInAttesaStipula.max)}
+            }else if(data.dataPassataInAttesaStipula.min && data.dataPassataInAttesaStipula.max){
+                query["dataPassataInAttesaStipula.date"] = { 
+                    "$gte": StartDay(data.dataPassataInAttesaStipula.min),
+                    "$lte": EndDay(data.dataPassataInAttesaStipula.max)
+                }
+            }    
+        }
+        if(data.mediazioneData){
+            if(data.mediazioneData.min && !data.mediazioneData.max){
+                query["mediazione.data"] = { "$gte": StartDay(data.mediazioneData.min)}
+            }else if(!data.mediazioneData.min && data.mediazioneData.max){
+                query["mediazione.data"] = { "$lte": EndDay(data.mediazioneData.max)}
+            }else if(data.mediazioneData.min && data.mediazioneData.max){
+                query["mediazione.data"] = { 
+                    "$gte": StartDay(data.mediazioneData.min),
+                    "$lte": EndDay(data.mediazioneData.max)
+                }
+            }    
+        }
+        if(data.anticipoTecnicoData){
+            if(data.anticipoTecnicoData.min && !data.anticipoTecnicoData.max){
+                query["anticipo_tecnico.data_pagamento.date"] = { "$gte": StartDay(data.anticipoTecnicoData.min)}
+            }else if(!data.anticipoTecnicoData.min && data.anticipoTecnicoData.max){
+                query["anticipo_tecnico.data_pagamento.date"] = { "$lte": EndDay(data.anticipoTecnicoData.max)}
+            }else if(data.anticipoTecnicoData.min && data.anticipoTecnicoData.max){
+                query["anticipo_tecnico.data_pagamento.date"] = { 
+                    "$gte": StartDay(data.anticipoTecnicoData.min),
+                    "$lte": EndDay(data.anticipoTecnicoData.max)
+                }
+            }    
+        }
+        if(data.stornoData){
+            if(data.stornoData.min && !data.stornoData.max){
+                query["stornoData.data.date"] = { "$gte": StartDay(data.stornoData.min)}
+            }else if(!data.stornoData.min && data.stornoData.max){
+                query["stornoData.data.date"] = { "$lte": EndDay(data.stornoData.max)}
+            }else if(data.stornoData.min && data.stornoData.max){
+                query["stornoData.data.date"] = { 
+                    "$gte": StartDay(data.stornoData.min),
+                    "$lte": EndDay(data.stornoData.max)
+                }
+            }    
+        }
+        if(data.bank){
+            query["banca"] = data.bank;
+        }
+        
+
+        
+        var total = await Pratiche.count(query);
+        var pratiche = await Pratiche.find(query).skip(skip).sort(sorting).populate('campagna').populate('campagnaNascosta').populate('agente').populate('agenzia').populate('banca').populate('segnalaCollega.agente').populate('tandem.agente').limit(limit);
+        return resolve({total:total,pratiche:pratiche});
+    })
+    
+}
+
+//Get End of Date
+function EndDay(date){
+    var d = new Date(date);
+    d.setHours(23,59,59,999);
+    return d;
+}
+
+function StartDay(date){
+    var d = new Date(date);
+    d.setHours(0,0,0,0);
+    return d;
+}
+
 module.exports.getLength = function(){
     return new Promise(async (resolve,reject)=>{
         Pratiche.count({},function(err,count){
@@ -134,17 +315,17 @@ module.exports.fetchProvvigioni = async function(mese,anno){
                 'dataLiquidazione.anno':fiveMonthBefore.anno,
             },
             {
-                // Stipulate (Mutuo/Prestito) [non CheBanca!] 2 mesi fa
+                // Stipulate (Mutuo/Prestito) 2 mesi fa
                 tipo: ['Mutuo Immobile','Prestito Personale'],
-                banca: { $ne: mongoose.Types.ObjectId("6384eb80db64d5906c831ea2") }, //banca != 'CheBanca!'
+                // banca: { $ne: mongoose.Types.ObjectId("6384eb80db64d5906c831ea2") }, //banca != 'CheBanca!'
                 'dataLiquidazione.mese':twoMonthBefore.mese,
                 'dataLiquidazione.anno':twoMonthBefore.anno,
             },
             {
-                // Erogate (CQS) nel mese corrente
+                // Erogate (CQS) nel mese precedente
                 tipo: ['Cessione del Quinto'],
-                'dataLiquidazione.mese':thisMonth.mese,
-                'dataLiquidazione.anno':thisMonth.anno,
+                'dataLiquidazione.mese':oneMonthBefore.mese,
+                'dataLiquidazione.anno':oneMonthBefore.anno,
             },
             {
                 // STORNO == True && STORNO_Data == nel Mese Corrente
@@ -153,10 +334,10 @@ module.exports.fetchProvvigioni = async function(mese,anno){
                 'storno.data.anno': thisMonth.anno,
             },
             {
-                // ANTICIPO_TECNICO == True && ANTICIPO_TECNICO_DATAPAGAMENTO 2 mesi fa
+                // ANTICIPO_TECNICO == True && ANTICIPO_TECNICO_DATAPAGAMENTO mese corrente
                 'anticipo_tecnico.active': true,
-                'anticipo_tecnico.data_pagamento.mese': twoMonthBefore.mese,
-                'anticipo_tecnico.data_pagamento.anno': twoMonthBefore.anno,
+                'anticipo_tecnico.data_pagamento.mese': thisMonth.mese,
+                'anticipo_tecnico.data_pagamento.anno': thisMonth.anno,
             },
             {
                 // Mediazione.Pagata == true && Mediazione.Data 1 mese fa

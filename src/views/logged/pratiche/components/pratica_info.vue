@@ -181,7 +181,6 @@
                     </div>
 
 
-                    
                     <div class="subsection">
                         <div class="subsectionLabel">SEGNALA COLLEGA</div>
                         <div class="flex">
@@ -189,7 +188,7 @@
                             @click="openAgente(pratica.segnalaCollega?pratica.segnalaCollega.agente:null)"
                             >
                                 <div class="fakeInput">
-                                    <span v-if="pratica.segnalaCollega">{{pratica.segnalaCollega.agente.email}}</span>
+                                    <span v-if="pratica.segnalaCollega && pratica.segnalaCollega.agente">{{pratica.segnalaCollega.agente.email}}</span>
                                 </div>
                                 <div class="label fakeInputLabel">AGENTE</div>
                             </div>
@@ -207,7 +206,7 @@
                             @click="openAgente(pratica.tandem?pratica.tandem.agente:null)"
                             >
                                 <div class="fakeInput">
-                                    <span v-if="pratica.tandem">{{pratica.tandem.agente.email}}</span>
+                                    <span v-if="pratica.tandem && pratica.tandem.agente">{{pratica.tandem.agente.email}}</span>
                                 </div>
                                 <div class="label fakeInputLabel">AGENTE</div>
                             </div>
@@ -217,6 +216,7 @@
                             </div>
                         </div>
                     </div>
+                    
                 </div>
             </div>
         </form>

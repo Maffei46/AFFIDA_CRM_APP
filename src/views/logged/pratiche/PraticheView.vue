@@ -15,11 +15,11 @@
             <router-link to="/logged/pratiche/info">
                 <div class="link">INFO</div>
             </router-link>
-            <router-link to="/logged/pratiche/import">
+            <!-- <router-link to="/logged/pratiche/import">
                 <div class="link">IMPORTA</div>
-            </router-link>
+            </router-link> -->
             <router-link to="/logged/pratiche/select">
-                <div class="link">SELECT</div>
+                <div class="link">CERCA</div>
             </router-link>
             <router-link to="/logged/pratiche/provvigioni">
                 <div class="link">PROVVIGIONI</div>

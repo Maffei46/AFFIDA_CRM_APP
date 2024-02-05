@@ -22,7 +22,8 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
+import { mapActions } from 'vuex'
+const {ipcRenderer} = require('electron');
 import PraticaInfo from './components/pratica_info.vue'
 import PraticaProvvigioni from './components/pratica_provvigioni.vue'
 import PraticaFatturazione from './components/pratica_fatturazione.vue'
@@ -37,29 +38,26 @@ export default {
         }
     },
     methods:{
-        ...mapActions(['pratiche_fetchAll','agenti_fetchAll']),
-        setup(){
-            const index = this.Pratiche.findIndex(e => e._id == this.$route.params.id);
-            if(index == -1){
-                this.loading = false;
-                return this.founded = true;
-            }
-
-            this.pratica = JSON.parse(JSON.stringify(this.Pratiche[index]));
+        ...mapActions(['agenti_fetchAll']),
+        async fetch(){
+            var data = await ipcRenderer.invoke('pratiche/fetchOne',{id:this.$route.params.id});
+            this.pratica = JSON.parse(data);
+            if(this.pratica) this.founded = true;
             this.loading = false;
-        }
+        },
     },
-    computed: mapGetters(['Pratiche']),
     mounted(){
-        setTimeout(() => {
-            this.agenti_fetchAll();
-            if(!this.$route.query.fromProv){
-                this.pratiche_fetchAll().then(()=>{this.setup();})
-            }else{
-                this.setup();
-            }
+        this.agenti_fetchAll();
+        this.fetch();
+        // setTimeout(() => {
             
-        }, 0);
+        //     if(!this.$route.query.fromProv){
+        //         this.pratiche_fetchAll().then(()=>{this.setup();})
+        //     }else{
+        //         this.setup();
+        //     }
+            
+        // }, 0);
     }
 }
 </script>

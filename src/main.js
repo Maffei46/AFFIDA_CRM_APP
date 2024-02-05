@@ -8,6 +8,10 @@ import Pagination from 'vue-pagination-2';
 
 Vue.config.productionTip = false
 
+import InputDateComponent from './components/InputDate.vue';
+
+Vue.component('MyInputDate',InputDateComponent);
+
 Vue.use(Notifications)
 
 Vue.component('LocationPath',LocationPath);

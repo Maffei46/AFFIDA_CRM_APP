@@ -15,7 +15,13 @@ module.exports.fetchAll = function(){
             return resolve(banche)
         })
     })
-    
+}
+
+module.exports.getNames = function(){
+    return new Promise(async (resolve,reject) => {
+        var banksNames = await Banche.find().select('_id name');
+        return resolve(banksNames)
+    })
 }
 
 module.exports.create = function(banca){

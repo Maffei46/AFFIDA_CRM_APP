@@ -14,6 +14,12 @@ module.exports.start = function(basePath,win,store){
         return JSON.stringify(rappelBanche);
     })
 
+    // banche/fetchNames
+    ipcMain.handle(basePath+'/fetchNames',async (event)=>{
+        var names = await banche_actions.getNames();
+        return JSON.stringify(names);
+    })
+
     // banche/create
     ipcMain.handle(basePath+'/create',async (event,banca)=>{
         var create = await banche_actions.create(banca);

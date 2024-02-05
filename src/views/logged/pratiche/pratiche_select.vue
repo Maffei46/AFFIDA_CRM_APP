@@ -2,291 +2,464 @@
     <div id="pratiche_select">
         <LocationPath :routes="[
             {n:'Pratiche',p:'/logged/pratiche',i:'payments'},
-            {n:'Seleziona',i:'search'}
+            {n:'Cerca',i:'search'}
             ]" />
 
-    <div class="loading" v-if="loading"><div class="lds-ring"><div></div><div></div><div></div><div></div></div></div>
+        <div class="loading" v-if="loading"><div class="lds-ring"><div></div><div></div><div></div><div></div></div></div>
 
-        <div class="top">
-            <pagination v-model="page" :per-page="praticheXPage" :records="PraticheFiltred.length" />
+        <div class="search">
+            <form @submit.prevent="fetch()">
+                <div class="input">
+                    <input type="number" v-model="filters.IDEGG">
+                    <div class="label">IDEGG</div>
+                </div>
+                <div class="input">
+                    <select v-model="filters.sorting">
+                        <option value="lastEdit">Ultima Modifica</option>
+                        <option value="IDEGG">IDEGG</option>
+                        <option value="dataCaricamento">Data Caricamento</option>
+                        <option value="dataLiquidazione">Data Liquidazione</option>
+                    </select>
+                    <div class="label">Ordinamento</div>
+                </div>
+                <div class="checkbox" style="width: 90px;">
+                    <input type="checkbox" v-model="filters.asc">
+                    <div class="label"><span v-if="filters.asc">CRESCENTE</span><span v-else>DECRESCENTE</span></div>
+                </div>
+                <div class="openMore" @click="openMore=true">more</div>
+                
+                <button type="submit">CERCA</button>
+            </form>
         </div>
-        
-        <div class="pratiche">
-            <div class="top">
-                <div class="IDEGG" @click="sort('IDEGG')">IDEGG 
-                    <i class="material-icons" v-if="(sorting=='IDEGG' && !asc)">arrow_upward</i>
-                    <i class="material-icons" v-if="(sorting=='IDEGG' && asc)">arrow_downward</i>
+        <div class="data" v-if="!loading">
+            <div class="pratiche">
+                <div class="top">
+                    <div class="IDEGG">IDEGG</div>
+                    <div class="dataCaricamento">Caricamento</div>
+                    <div class="dataCaricamento">Modifica</div>
+                    <div class="cliente">Cliente</div>
+                    <div class="banca">Banca</div>
+                    <div class="agente">Agente</div>
+                    <div class="stato">Stato</div>
+                    <div class="statusComplete">
+                        <Hover hoverTxt="Percentuale Completamento">%</Hover>
+                    </div>
                 </div>
-
-                <div class="dataCaricamento" @click="sort('dataCaricamento')">Caricamento
-                    <i class="material-icons" v-if="(sorting=='dataCaricamento' && !asc)">arrow_upward</i>
-                    <i class="material-icons" v-if="(sorting=='dataCaricamento' && asc)">arrow_downward</i>
-                </div>
-
-                <div class="dataCaricamento" @click="sort('lastEdit')">Modifica
-                    <i class="material-icons" v-if="(sorting=='lastEdit' && !asc)">arrow_upward</i>
-                    <i class="material-icons" v-if="(sorting=='lastEdit' && asc)">arrow_downward</i>
-                </div>
-
-                <div class="cliente" @click="sort('cliente')">Cliente
-                    <i class="material-icons" v-if="(sorting=='cliente' && !asc)">arrow_upward</i>
-                    <i class="material-icons" v-if="(sorting=='cliente' && asc)">arrow_downward</i>
-                </div>
-
-                <div class="banca" @click="sort('banca')">Banca
-                    <i class="material-icons" v-if="(sorting=='banca' && !asc)">arrow_upward</i>
-                    <i class="material-icons" v-if="(sorting=='banca' && asc)">arrow_downward</i>
-                </div>
-
-                <div class="agente" @click="sort('agente')">Agente
-                    <i class="material-icons" v-if="(sorting=='agente' && !asc)">arrow_upward</i>
-                    <i class="material-icons" v-if="(sorting=='agente' && asc)">arrow_downward</i>
-                </div>
-
-                <div class="stato" @click="sort('stato')">Stato
-                    <i class="material-icons" v-if="(sorting=='stato' && !asc)">arrow_upward</i>
-                    <i class="material-icons" v-if="(sorting=='stato' && asc)">arrow_downward</i>
-                </div>
-
-                <div class="statusComplete" @click="sort('statusComplete')">
-                    <Hover hoverTxt="Percentuale Completamento">%</Hover>
-                    <i class="material-icons" v-if="(sorting=='statusComplete' && !asc)">arrow_upward</i>
-                    <i class="material-icons" v-if="(sorting=='statusComplete' && asc)">arrow_downward</i>
-                </div>
-            </div>
-            <div class="bottom">
-                <div class="pratica" v-for="pratica in PraticheFiltred.slice((page-1)*praticheXPage,((page-1)*praticheXPage)+praticheXPage)" :key="pratica._id" @click="openPratica(pratica._id)">
-                    <div class="sect IDEGG">{{pratica.IDEGG}}</div>
-                    <div class="sect dataCaricamento">{{formatDate(pratica.dataCaricamento)}}</div>
-                    <div class="sect dataCaricamento">{{new Date(pratica.lastEdit).toLocaleDateString()}}</div>
-                    <div class="sect cliente">{{pratica.cliente.nome}} {{pratica.cliente.cognome}}</div>
-                    <div class="sect banca">{{pratica.banca.name}}</div>
-                    <div class="sect agente">{{pratica.agente.nome}} {{pratica.agente.cognome}}</div>
-                    <div class="sect stato">{{pratica.stato}}</div>
-                    <div class="sect statusComplete">{{pratica.statusComplete}}%</div>
+                <div class="bottom">
+                    <div class="pratica" v-for="pratica in pratiche" :key="pratica._id" @click="openPratica(pratica._id)">
+                        <div class="sect IDEGG">{{pratica.IDEGG}}</div>
+                        <div class="sect dataCaricamento">{{formatDate(pratica.dataCaricamento)}}</div>
+                        <div class="sect dataCaricamento">{{new Date(pratica.lastEdit).toLocaleDateString()}}</div>
+                        <div class="sect cliente">{{pratica.cliente.nome}} {{pratica.cliente.cognome}}</div>
+                        <div class="sect banca">{{pratica.banca.name}}</div>
+                        <div class="sect agente">{{pratica.agente.nome}} {{pratica.agente.cognome}}</div>
+                        <div class="sect stato">{{pratica.stato}}</div>
+                        <div class="sect statusComplete">{{pratica.statusComplete}}%</div>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="prat">{{PraticheFiltred.length}} su {{Pratiche.length}} Pratiche</div>
-        <PraticheFilters :applyFilters="applyFilters" ref="PraticheFilterComponent" />
+        <div class="pages" v-if="!loading"><pagination v-model="currentPage" :per-page="PraticheXPage" :records="total" /></div>
+        <div class="more" v-if="openMore">
+            <div class="bg" @click="openMore = false"></div>
+            <div class="modal">
+                <form @submit.prevent="fetch()">
+                    <div class="secTitle">FILTRI</div>
+                    <div class="flex">
+                        <div class="left">
+                            <div class="input">
+                                <input type="number" v-model="filters.IDEGG">
+                                <div class="label">IDEGG</div>
+                            </div>
 
-        <div class="refresh" @click="refresh()">
-            <i class="material-icons">refresh</i>
+                            <div style="display: flex; column-gap: 10px;">
+                                <div class="input" style="width: 100%;">
+                                    <select v-model="filters.sorting">
+                                        <option value="lastEdit">Ultima Modifica</option>
+                                        <option value="IDEGG">IDEGG</option>
+                                        <option value="dataCaricamento">Data Caricamento</option>
+                                        <option value="dataLiquidazione">Data Liquidazione</option>
+                                    </select>
+                                    <div class="label">Ordinamento</div>
+                                </div>
+
+                                <div class="checkbox" style="width: 130px;">
+                                    <input type="checkbox" v-model="filters.asc">
+                                    <div class="label"><span v-if="filters.asc">CRESCENTE</span><span v-else>DECRESCENTE</span></div>
+                                </div>
+                            </div>
+
+                            <div class="input">
+                                <select v-model="filters.bank">
+                                    <option :value="null">Nessuno</option>
+                                    <option :value="bank._id" v-for="(bank) in banks" :key="bank._id">{{ bank.name }}</option>
+                                </select>
+                                <div class="label">Banca</div>
+                            </div>
+
+                            <div class="input">
+                                <select v-model="filters.finalita">
+                                    <option :value="null">Nessuno</option>
+                                    <option :value="finalit" v-for="(finalit) in finalita" :key="finalit">{{ finalit }}</option>
+                                </select>
+                                <div class="label">Finalità</div>
+                            </div>
+
+                            <div class="input">
+                                <select v-model="filters.tipo">
+                                    <option :value="null">Nessuno</option>
+                                    <option :value="tipo" v-for="(tipo) in tipi" :key="tipo">{{ tipo }}</option>
+                                </select>
+                                <div class="label">Tipo</div>
+                            </div>
+
+                            <div class="input">
+                                <select v-model="filters.tipologia">
+                                    <option :value="null">Nessuno</option>
+                                    <option :value="tipologia" v-for="(tipologia) in tipologie" :key="tipologia">{{ tipologia }}</option>
+                                </select>
+                                <div class="label">Tipologia</div>
+                            </div>
+
+                            <div class="input">
+                                <select v-model="filters.stato">
+                                    <option :value="null">Nessuno</option>
+                                    <option :value="stato" v-for="(stato) in stati" :key="stato">{{ stato }}</option>
+                                </select>
+                                <div class="label">Stato</div>
+                            </div>
+                        </div>
+                        <div class="right">
+                            <div class="sect">DATA CARICAMENTO</div>
+                            <div class="flex">
+                                <div class="input">
+                                    <input type="date" v-model="filters.dataCaricamento.min">
+                                    <div class="label">MIN</div>
+                                </div>
+                                <div class="input">
+                                    <input type="date" v-model="filters.dataCaricamento.max">
+                                    <div class="label">MAX</div>
+                                </div>
+                            </div>
+
+                            <div class="sect">DATA LIQUIDAZIONE</div>
+                            <div class="flex">
+                                <div class="input">
+                                    <input type="date" v-model="filters.dataLiquidazione.min">
+                                    <div class="label">MIN</div>
+                                </div>
+                                <div class="input">
+                                    <input type="date" v-model="filters.dataLiquidazione.max">
+                                    <div class="label">MAX</div>
+                                </div>
+                            </div>
+
+                            <div class="sect">DATA INCASSO MEDIAZIONE</div>
+                            <div class="flex">
+                                <div class="input">
+                                    <input type="date" v-model="filters.dataIncassoMediazione.min">
+                                    <div class="label">MIN</div>
+                                </div>
+                                <div class="input">
+                                    <input type="date" v-model="filters.dataIncassoMediazione.max">
+                                    <div class="label">MAX</div>
+                                </div>
+                            </div>
+
+                            <div class="sect">DATA PASSATA IN CARICAMENTO IN BANCA</div>
+                            <div class="flex">
+                                <div class="input">
+                                    <input type="date" v-model="filters.dataPassataInCaricamentoInBanca.min">
+                                    <div class="label">MIN</div>
+                                </div>
+                                <div class="input">
+                                    <input type="date" v-model="filters.dataPassataInCaricamentoInBanca.max">
+                                    <div class="label">MAX</div>
+                                </div>
+                            </div>
+
+                            <div class="sect">DATA PASSATA IN DELIBERATA</div>
+                            <div class="flex">
+                                <div class="input">
+                                    <input type="date" v-model="filters.dataPassataInDeliberata.min">
+                                    <div class="label">MIN</div>
+                                </div>
+                                <div class="input">
+                                    <input type="date" v-model="filters.dataPassataInDeliberata.max">
+                                    <div class="label">MAX</div>
+                                </div>
+                            </div>
+
+                            <div class="sect">DATA PASSATA IN ATTESA STIPULA</div>
+                            <div class="flex">
+                                <div class="input">
+                                    <input type="date" v-model="filters.dataPassataInAttesaStipula.min">
+                                    <div class="label">MIN</div>
+                                </div>
+                                <div class="input">
+                                    <input type="date" v-model="filters.dataPassataInAttesaStipula.max">
+                                    <div class="label">MAX</div>
+                                </div>
+                            </div>
+
+                            <div class="sect">DATA MEDIAZIONE PAGATA</div>
+                            <div class="flex">
+                                <div class="input">
+                                    <input type="date" v-model="filters.mediazioneData.min">
+                                    <div class="label">MIN</div>
+                                </div>
+                                <div class="input">
+                                    <input type="date" v-model="filters.mediazioneData.max">
+                                    <div class="label">MAX</div>
+                                </div>
+                            </div>
+
+                            <div class="sect">DATA ANTICIPO TECNICO PAGATO</div>
+                            <div class="flex">
+                                <div class="input">
+                                    <input type="date" v-model="filters.anticipoTecnicoData.min">
+                                    <div class="label">MIN</div>
+                                </div>
+                                <div class="input">
+                                    <input type="date" v-model="filters.anticipoTecnicoData.max">
+                                    <div class="label">MAX</div>
+                                </div>
+                            </div>
+
+                            <div class="sect">DATA STORNO PAGATO</div>
+                            <div class="flex">
+                                <div class="input">
+                                    <input type="date" v-model="filters.stornoData.min">
+                                    <div class="label">MIN</div>
+                                </div>
+                                <div class="input">
+                                    <input type="date" v-model="filters.stornoData.max">
+                                    <div class="label">MAX</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="buttons" style="display: flex; column-gap: 10px;">
+                        <button @click="reset()" style="width: 150px;">RESET</button>
+                        <button type="submit">CERCA</button>    
+                    </div>
+                    
+                </form>
+            </div>
         </div>
     </div>
-    
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
-import Hover from '../../../components/hover.vue'
-import PraticheFilters from './pratiche_filters_component.vue'
+const {ipcRenderer} = require('electron');
+import Hover from '../../../components/hover.vue';
 export default {
-    components:{Hover,PraticheFilters},
+    components:{Hover},
     data() {
         return {
+            pratiche:[],
+            total:null,
             loading: true,
-            page:1,
-            pages:0,
-            praticheXPage:100,
-            PraticheFiltred: [],
-            sorting:'lastEdit',
-            asc:true,
-            lastMaxPratiche:10000,
+            PraticheXPage:100,
+            currentPage:1,
+            banks:[],
+            finalita:[],
+            tipi:[],
+            tipologie:[],
+            stati:[],
+            filters:{
+                IDEGG:null,
+                sorting:'lastEdit',
+                asc:false,
+                bank:null,
+                finalita:null,
+                tipo:null,
+                tipologia:null,
+                stato:null,
+                dataCaricamento:{min:null,max:null},
+                dataLiquidazione:{min:null,max:null},
+                dataIncassoMediazione:{min:null,max:null},
+                dataPassataInCaricamentoInBanca:{min:null,max:null},
+                dataPassataInDeliberata:{min:null,max:null},
+                dataPassataInAttesaStipula:{min:null,max:null},
+                mediazioneData:{min:null,max:null},
+                anticipoTecnicoData:{min:null,max:null},
+                stornoData:{min:null,max:null},
+            },
+            openMore:false,
         }
     },
-    methods:{
-        ...mapActions(['pratiche_fetchAll','pratiche_fetchNumber','pratiche_fetchAllForced']),
+    watch:{
+        currentPage: function(){
+            this.fetchPage();
+        }
+    },
+    computed:{
+        pages(){
+            return Math.ceil(this.total / this.PraticheXPage);
+        },
+    },
+    methods: {
+        async fetch(){
+            this.loading = true;
+            this.pratiche = [];
+            var queryParams = {
+                Page: 0,
+                IDEGG: this.filters.IDEGG,
+                Sorting: this.filters.sorting,
+                asc: this.filters.asc,
+                limit: this.PraticheXPage,
+                dataCaricamento: this.filters.dataCaricamento,
+                dataLiquidazione: this.filters.dataLiquidazione,
+                dataIncassoMediazione: this.filters.dataIncassoMediazione,
+                dataPassataInCaricamentoInBanca: this.filters.dataPassataInCaricamentoInBanca,
+                dataPassataInDeliberata: this.filters.dataPassataInDeliberata,
+                dataPassataInAttesaStipula: this.filters.dataPassataInAttesaStipula,
+                mediazioneData: this.filters.mediazioneData,
+                anticipoTecnicoData: this.filters.anticipoTecnicoData,
+                stornoData: this.filters.stornoData,
+                bank: this.filters.bank,
+            }
+            var data = await ipcRenderer.invoke('pratiche/fetch',queryParams);
+            var parsedData = JSON.parse(data);
+            this.pratiche = parsedData.pratiche;
+            this.total = parsedData.total;
+            this.currentPage = 1;
+            this.loading = false;
+        },
+        async fetchPage(){
+            this.loading = true;
+            var queryParams = {
+                Page: this.currentPage-1,
+                IDEGG: this.filters.IDEGG,
+                Sorting: this.filters.sorting,
+                asc: this.filters.asc,
+                limit: this.PraticheXPage,
+                dataCaricamento: this.filters.dataCaricamento,
+                dataLiquidazione: this.filters.dataLiquidazione,
+                dataIncassoMediazione: this.filters.dataIncassoMediazione,
+                dataPassataInCaricamentoInBanca: this.filters.dataPassataInCaricamentoInBanca,
+                dataPassataInDeliberata: this.filters.dataPassataInDeliberata,
+                dataPassataInAttesaStipula: this.filters.dataPassataInAttesaStipula,
+                mediazioneData: this.filters.mediazioneData,
+                anticipoTecnicoData: this.filters.anticipoTecnicoData,
+                stornoData: this.filters.stornoData,
+                bank: this.filters.bank,
+            }
+            var data = await ipcRenderer.invoke('pratiche/fetch',queryParams);
+            var parsedData = JSON.parse(data);
+            this.pratiche = parsedData.pratiche;
+            this.total = parsedData.total;
+            this.loading = false;
+        },
         formatDate(d){
             var data = new Date(d.mese+'-'+d.giorno+'-'+d.anno);
             return data.toLocaleDateString()
         },
-        setup(){
-            this.PraticheFiltred = JSON.parse(JSON.stringify(this.Pratiche));
-            this.pages = Math.round(this.PraticheFiltred.length / this.praticheXPage);
-            if(this.$refs.PraticheFilterComponent.preFilter){
-                this.$refs.PraticheFilterComponent.apply();
-            }
-            
-        },
         openPratica(id){
             this.$router.push('/logged/pratiche/'+id);
         },
-        async filtersFUN(filters){               
-                if(filters.maxPratiche != this.lastMaxPratiche){
-                    await this.pratiche_fetchNumber(filters.maxPratiche);
-                    this.lastMaxPratiche = filters.maxPratiche;
-                }
-
-                this.PraticheFiltred = JSON.parse(JSON.stringify(this.Pratiche));
-                
-                if(filters.IDEGG != ''){
-                    this.PraticheFiltred = this.PraticheFiltred.filter(e => e.IDEGG.includes(filters.IDEGG))
-                }
-                if(filters.cliente != ''){
-                    this.PraticheFiltred = this.PraticheFiltred.filter(e => { 
-                            if(!e.cliente) return false;
-                            if(e.cliente.nome){
-                                if(e.cliente.nome.toLowerCase().includes(filters.cliente.toLowerCase())) return true;
-                            }
-                            if(e.cliente.cognome){
-                                if(e.cliente.cognome.toLowerCase().includes(filters.cliente.toLowerCase())) return true;
-                            }
-                            if(e.cliente.email){
-                                if(e.cliente.email.toLowerCase().includes(filters.cliente.toLowerCase())) return true;
-                            }
-                            return false;
-                    })
-                }
-
-                if(filters.banca != ''){
-                    this.PraticheFiltred = this.PraticheFiltred.filter(e => { return e.banca._id == filters.banca})
-                }
-
-                if(filters.agente != ''){
-                    this.PraticheFiltred = this.PraticheFiltred.filter(e => { return e.agente._id == filters.agente})
-                }
+        reset(){
+            this.filters = {
+                IDEGG:null,
+                sorting:'lastEdit',
+                asc:false,
+                bank:null,
+                finalita:null,
+                tipo:null,
+                tipologia:null,
+                stato:null,
+                dataCaricamento:{min:null,max:null},
+                dataLiquidazione:{min:null,max:null},
+                dataIncassoMediazione:{min:null,max:null},
+                dataPassataInCaricamentoInBanca:{min:null,max:null},
+                dataPassataInDeliberata:{min:null,max:null},
+                dataPassataInAttesaStipula:{min:null,max:null},
+                mediazioneData:{min:null,max:null},
+                anticipoTecnicoData:{min:null,max:null},
+                stornoData:{min:null,max:null},
+            },
+            this.fetch();
+            this.openMore = false;
         },
-        async applyFilters(filters){
-            this.loading = true;
-            this.filtersFUN(filters).then(()=>{this.loading = false;})
+        async fetchBanks(){
+            var data = await ipcRenderer.invoke('banche/fetchNames',{});
+            this.banks = JSON.parse(data);
         },
-        async sortFUN(val){
-            if(val == this.sorting){
-                this.asc = !this.asc;  
-                }else{
-                    this.asc = true;
-                }
-
-                if(val == 'IDEGG'){
-                    if(this.asc){
-                        this.PraticheFiltred.sort((a,b)=>{
-                            if(Number(a.IDEGG) > Number(b.IDEGG)) return -1;
-                            return 1;
-                        })
-                    }else{
-                        this.PraticheFiltred.sort((a,b)=>{
-                            if(Number(a.IDEGG) > Number(b.IDEGG)) return 1;
-                            return -1;
-                        })
-                    }  
-                }
-                if(val == 'dataCaricamento'){
-                    if(this.asc){
-                        this.PraticheFiltred.sort( (a,b)=> new Date(b.dataCaricamento.date) - new Date(a.dataCaricamento.date));
-                    }else{
-                        this.PraticheFiltred.sort( (a,b)=> new Date(a.dataCaricamento.date) - new Date(b.dataCaricamento.date));
-                    }
-                }
-                if(val == 'lastEdit'){
-                    if(this.asc){
-                        this.PraticheFiltred.sort( (a,b)=> new Date(b.lastEdit) - new Date(a.lastEdit));
-                    }else{
-                        this.PraticheFiltred.sort( (a,b)=> new Date(a.lastEdit) - new Date(b.lastEdit));
-                    }
-                }
-                if(val == 'cliente'){
-                    if(this.asc){
-                        this.PraticheFiltred.sort((a,b)=>{
-                            if(a.cliente.nome+' '+a.cliente.cognome > b.cliente.nome+' '+b.cliente.cognome) return 1;
-                            return -1;
-                        })
-                    }else{
-                        this.PraticheFiltred.sort((a,b)=>{
-                            if(a.cliente.nome+' '+a.cliente.cognome > b.cliente.nome+' '+b.cliente.cognome) return -1;
-                            return 1;
-                        })
-                    }
-                }
-                if(val == 'agente'){
-                    if(this.asc){
-                        this.PraticheFiltred.sort((a,b)=>{
-                            if(a.agente.nome+' '+a.agente.cognome > b.agente.nome+' '+b.agente.cognome) return 1;
-                            return -1;
-                        })
-                    }else{
-                        this.PraticheFiltred.sort((a,b)=>{
-                            if(a.agente.nome+' '+a.agente.cognome > b.agente.nome+' '+b.agente.cognome) return -1;
-                            return 1;
-                        })
-                    }
-                }
-                if(val == 'banca'){
-                    if(this.asc){
-                        this.PraticheFiltred.sort((a,b)=>{
-                            if(a.banca.name > b.banca.name) return 1;
-                            return -1;
-                        })
-                    }else{
-                        this.PraticheFiltred.sort((a,b)=>{
-                            if(a.banca.name > b.banca.name) return -1;
-                            return 1;
-                        })
-                    }
-                }
-                if(val == 'stato'){
-                    if(this.asc){
-                        this.PraticheFiltred.sort((a,b)=>{
-                            if(a.stato > b.stato) return 1;
-                            return -1;
-                        })
-                    }else{
-                        this.PraticheFiltred.sort((a,b)=>{
-                            if(a.stato > b.stato) return -1;
-                            return 1;
-                        })
-                    }
-                }
-                if(val == 'statusComplete'){
-                    if(this.asc){
-                        this.PraticheFiltred.sort((a,b)=>{
-                            if(Number(a.statusComplete) > Number(b.statusComplete)) return -1;
-                            return 1;
-                        })
-                    }else{
-                        this.PraticheFiltred.sort((a,b)=>{
-                            if(Number(a.statusComplete) > Number(b.statusComplete)) return 1;
-                            return -1;
-                        })
-                    }  
-                }
-
-
-                this.sorting = val;
+        async fetchFinalita(){
+            var data = await ipcRenderer.invoke('pratiche/fetchFinalita',{});
+            this.finalita = JSON.parse(data);
         },
-        sort(val){
-            this.loading = true;
-            this.sortFUN(val).then(()=>{this.loading = false;})
+        async fetchTipi(){
+            var data = await ipcRenderer.invoke('pratiche/fetchTipi',{});
+            this.tipi = JSON.parse(data);
         },
-        refresh(){
-            this.loading = true;
-            this.pratiche_fetchAllForced().then(()=>{this.setup();this.loading=false;})
+        async fetchTipologie(){
+            var data = await ipcRenderer.invoke('pratiche/fetchTipologie',{});
+            this.tipologie = JSON.parse(data);
+        },
+        async fetchStati(){
+            var data = await ipcRenderer.invoke('pratiche/fetchStati',{});
+            this.stati = JSON.parse(data);
         }
     },
-    computed: mapGetters(['Pratiche']),
-    mounted(){
-        //Questo permette di avviare la procedura una volta che la pagina è stata caricata
-        setTimeout(() => {
-            this.pratiche_fetchAll().then(()=>{this.setup();this.loading=false;})
-        }, 0);
+    mounted() {
+        this.fetch();
+        this.fetchBanks();
+        this.fetchFinalita();
+        this.fetchTipi();
+        this.fetchTipologie();
+        this.fetchStati();
     },
 }
 </script>
 
 <style lang="scss" scoped>
 #pratiche_select{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-flow: column;
-    min-height: calc( var(--app-height) - var(--TitleBarHeight));
-    padding-top: 30px;
+    margin-top: 50px;
+}
+
+.search{
+    form{
+        display: flex;
+        gap: 10px;
+        button{
+            height: 29px;
+            width: 60px;
+        }
+        .cb{
+            width: 20px;
+            height: 20px;
+        }
+
+        .openMore{
+            border: 1px solid var(--mainColor);
+            height: 30px;
+            border-radius: 4px;
+            padding: 0px 5px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 9pt;
+            text-transform: uppercase;
+            font-weight: bold;
+            background-color: var(--mainBGColor);
+            color: var(--mainColor);
+            cursor: pointer;
+            &:hover{
+                color: var(--mainBGColor);
+                background-color: var(--mainColor);
+            }
+        }
+    }
 }
 
 .pratiche{
     border: 1px solid var(--mainColor);
     
     border-radius: 5px;
+    width: max-content;
+    margin: 0 auto;
     .top{
         display: flex;
         font-size: 9pt;
@@ -304,20 +477,11 @@ export default {
         .IDEGG{
             width: 55px;
             text-align: left;
-            cursor: pointer;
-            display: flex;
-            &:hover{
-                font-size: 10pt;
-            }
-            align-items: center;
         }
         .dataCaricamento{
             width: 85px;
             text-align: center;
             cursor: pointer;
-            &:hover{
-                font-size: 10pt;
-            }
             display: flex;
             justify-content: center;
             align-items: center;
@@ -327,9 +491,6 @@ export default {
             overflow: hidden;
             height: 14px;
             cursor: pointer;
-            &:hover{
-                font-size: 10pt;
-            }
             align-items: center;
         }
         .banca{
@@ -337,9 +498,6 @@ export default {
             overflow: hidden;
             height: 14px;
             cursor: pointer;
-            &:hover{
-                font-size: 10pt;
-            }
             align-items: center;
         }
         .agente{
@@ -347,26 +505,17 @@ export default {
             overflow: hidden;
             height: 14px;
             cursor: pointer;
-            &:hover{
-                font-size: 10pt;
-            }
             align-items: center;
         }
         .stato{
             width: 130px;
             cursor: pointer;
-            &:hover{
-                font-size: 10pt;
-            }
             align-items: center;
         }
         .statusComplete{
             width: 30px;
             text-align: right;
             cursor: pointer;
-            &:hover{
-                font-size: 10pt;
-            }
             display: flex;
             justify-content: right;
             align-items: center;
@@ -374,7 +523,7 @@ export default {
     }
     .bottom{
         margin-top: 0px;
-        max-height: calc(var(--app-height) - var(--TitleBarHeight) - 110px);
+        max-height: calc(var(--app-height) - var(--TitleBarHeight) - 175px);
         padding: 10px;
         overflow-y: auto;
     }
@@ -426,53 +575,70 @@ export default {
         }
     }
 }
-
-.prat{
-    margin-top: 5px;
-    font-size: 10pt;
-    font-weight: 700;
-    opacity: 0.75;
-}
-
 .pages{
     display: flex;
-    column-gap: 10px;
-    .page{
-        cursor: pointer;
-        &:hover{
-            transform: scale(1.1);
-        }
-    }
-    .active{
-        text-decoration: underline;
-    }
-}
-
-.top{
-    display: flex;
+    justify-content: center;
     align-items: center;
+    margin-top: 15px;
 }
 
-
-.refresh{
-    position: fixed;
-    top: calc(var(--TitleBarHeight) + var(--SubMenuHeight) - 5px);
-    right:5px;
-    background: var(--Color3);
-    width: 40px;
-    height: 40px;
-    border-radius: 5px;
-    box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
-    cursor: pointer;
-    z-index: 61;
-    i{
-        position: absolute;
-        top:50%;left:50%;
-        transform: translateX(-50%) translateY(-50%);
-        font-size: 20pt;
+.more{
+    .bg{
+        position: fixed;
+        top: var(--TitleBarHeight);
+        left:0;
+        width: 100%;
+        height: calc(var(--app-height) - var(--TitleBarHeight));
+        backdrop-filter: blur(4px);
+        background-color: rgba(255, 255, 255, 0.048);
+        z-index: 60;
+        cursor: pointer;
     }
-    &:hover{
-        transform: scale(1.1);
+    .modal{
+        max-width: 1000px;
+        width: 100%;
+        background: var(--mainBGColor);
+        position: fixed;
+        top:calc(50% + var(--TitleBarHeight));
+        left:50%;
+        transform: translateX(-50%) translateY(calc(-50% - (var(--TitleBarHeight) / 2)));
+        border: 2px solid rgba(255, 255, 255, 0.181);
+        box-shadow: rgba(0, 0, 0, 0.3) 0px 19px 38px, rgba(0, 0, 0, 0.22) 0px 15px 12px;
+        border-radius: 5px;
+        z-index: 61;
+        padding: 10px 0px;
+        max-height: calc(var(--app-height) - var(--TitleBarHeight) - 20px);
+        form{
+            max-width: 100%;
+            padding: 0px 10px;
+        }
+        .flex{
+            display: flex;
+            max-height: calc(var(--app-height) - var(--TitleBarHeight) - 110px);
+            overflow: auto;
+            gap: 10px;
+            margin-top: 10px;
+            margin-bottom: 10px;
+            padding: 10px;
+            .left{
+                width: 100%;
+                border-right: 1px solid var(--mainColor);
+                padding-right: 10px;
+            }
+            .right{
+                width: 50%;
+                .sect{
+                    font-size: 9pt;
+                    font-weight: bold;
+                    margin-bottom: 7px;
+                }   
+                .flex{
+                    padding: 0;
+                    height: 30px;
+                    overflow: unset;
+                }
+            }
+        }
     }
 }
 </style>

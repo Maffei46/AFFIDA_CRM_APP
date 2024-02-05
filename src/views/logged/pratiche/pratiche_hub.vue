@@ -19,17 +19,17 @@
                 </div>
             </router-link>
 
-            <router-link to="/logged/pratiche/import">
+            <!-- <router-link to="/logged/pratiche/import">
                 <div class="section noselect">
                     <div class="icon"><i class="material-icons">publish</i></div>
                     <div class="name">IMPORTA</div>
                 </div>
-            </router-link>
+            </router-link> -->
 
             <router-link to="/logged/pratiche/select">
                 <div class="section noselect">
                     <div class="icon"><i class="material-icons">search</i></div>
-                    <div class="name">SELECT</div>
+                    <div class="name">CERCA</div>
                 </div>
             </router-link>
 

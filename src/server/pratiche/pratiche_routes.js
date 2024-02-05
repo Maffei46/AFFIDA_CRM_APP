@@ -20,6 +20,35 @@ module.exports.start = function(basePath,win,store){
         return JSON.stringify(pratiche);
     })
 
+    //  pratiche/fetchOne
+    ipcMain.handle(basePath+'/fetchOne', async (event,data) => {
+        var pratiche = await pratiche_actions.fetchOne(data?data.id:null);
+        return JSON.stringify(pratiche);
+    })
+
+    ipcMain.handle(basePath+'/fetch', async (event,data) => {
+        var pratiche = await pratiche_actions.fetch(data);
+        return JSON.stringify(pratiche);
+    })
+
+
+    ipcMain.handle(basePath+'/fetchFinalita', async (event,data) => {
+        var Finalita = await pratiche_actions.getFinalitas(data);
+        return JSON.stringify(Finalita);
+    })
+    ipcMain.handle(basePath+'/fetchTipi', async (event,data) => {
+        var Tipi = await pratiche_actions.getTipos(data);
+        return JSON.stringify(Tipi);
+    })
+    ipcMain.handle(basePath+'/fetchTipologie', async (event,data) => {
+        var Tipologie = await pratiche_actions.getTipologias(data);
+        return JSON.stringify(Tipologie);
+    })
+    ipcMain.handle(basePath+'/fetchStati', async (event,data) => {
+        var Stati = await pratiche_actions.getStatos(data);
+        return JSON.stringify(Stati);
+    })
+
     //  pratiche/fetchStates
     ipcMain.handle(basePath+'/states', async (event) => {
         var states = [
